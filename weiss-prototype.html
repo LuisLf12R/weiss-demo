@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weiss — Porsche Intelligent Assistant</title>
+<meta name="description" content="Weiss helps you discover, compare, and decide — with the precision and care you expect from Porsche.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F5F5F3;
+  --fg: #0A0A0A;
+  --card: #FFFFFF;
+  --border: #D7D7D2;
+  --muted: #8E8E8E;
+  --red: #9B111E;
+  --shadow: 0 2px 12px rgba(0,0,0,0.04);
+  --radius: 16px;
+}
+
+body {
+  font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* Utilities */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+@media (max-width: 768px) { .container { padding: 0 24px; } }
+
+.eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); }
+.hero-title { font-size: clamp(56px, 8vw, 72px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; color: var(--fg); }
+.section-title { font-size: clamp(32px, 5vw, 40px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; color: var(--fg); }
+.card-title { font-size: clamp(20px, 3vw, 24px); font-weight: 600; letter-spacing: -0.01em; color: var(--fg); }
+.body-text { font-size: clamp(16px, 2vw, 18px); font-weight: 400; line-height: 1.65; color: var(--muted); }
+.label { font-size: 13px; font-weight: 500; letter-spacing: 0.01em; }
+
+.surface { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); }
+.surface-elevated { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+
+/* Header */
+header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+header .inner { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+header .brand { display: flex; align-items: center; gap: 12px; }
+header .brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+header .brand-sub { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+header nav { display: flex; gap: 32px; }
+header nav a { font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+header nav a:hover { color: var(--fg); }
+@media (max-width: 768px) { header nav { display: none; } }
+
+/* Sections */
+section { padding: 80px 0; }
+section.large { padding: 96px 0 144px; }
+section.bg-card { background: var(--card); }
+section.bg-card-border { background: var(--card); border-top: 1px solid var(--border); }
+
+/* Hero */
+.hero-input-wrap {
+  display: flex; align-items: center; gap: 8px; padding: 8px;
+}
+.hero-input-wrap input {
+  flex: 1; background: transparent; border: none; outline: none;
+  padding: 12px 16px; font-size: 16px; color: var(--fg); font-family: inherit;
+}
+.hero-input-wrap input::placeholder { color: rgba(142,142,142,0.5); }
+.hero-input-wrap button {
+  background: var(--fg); color: #fff; border: none; border-radius: 12px;
+  padding: 12px 20px; font-size: 13px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 8px; white-space: nowrap; transition: opacity 0.2s;
+}
+.hero-input-wrap button:hover { opacity: 0.85; }
+
+.prompt-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.prompt-chip {
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+  padding: 8px 16px; cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+.prompt-chip:hover { color: var(--fg); border-color: rgba(10,10,10,0.2); }
+
+/* Assistant */
+.user-msg {
+  display: flex; justify-content: flex-end; margin-bottom: 24px;
+}
+.user-msg-bubble {
+  background: var(--fg); color: #fff; border-radius: 16px 16px 4px 16px;
+  padding: 14px 20px; max-width: 480px; font-size: 15px; line-height: 1.6;
+}
+.assistant-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 32px; }
+.assistant-avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--fg);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 4px;
+}
+.assistant-avatar svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 2; }
+
+.typing-dots { display: flex; gap: 6px; padding: 8px 0; }
+.typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.4s infinite both; }
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,80%,100%{opacity:0.3} 40%{opacity:1} }
+
+.rec-card { margin-bottom: 16px; overflow: hidden; }
+.rec-card .inner { padding: 24px; }
+.rec-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.rec-card-price { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.save-btn {
+  background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px;
+  color: var(--muted); transition: color 0.2s;
+}
+.save-btn:hover, .save-btn.active { color: var(--red); }
+.rec-field { margin-bottom: 12px; }
+.rec-field .eyebrow { margin-bottom: 4px; }
+.rec-field p { font-size: 14px; line-height: 1.6; color: rgba(10,10,10,0.75); }
+.rec-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.rec-actions a, .rec-actions button {
+  font-size: 12px; font-weight: 500; border: 1px solid var(--border); border-radius: 999px;
+  padding: 8px 16px; background: transparent; color: var(--muted); cursor: pointer;
+  text-decoration: none; transition: all 0.2s;
+}
+.rec-actions a:hover, .rec-actions button:hover { color: var(--fg); border-color: rgba(10,10,10,0.2); }
+
+/* Compare */
+.compare-table { overflow: hidden; }
+.compare-header { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid var(--border); }
+.compare-header-cell { padding: 20px; }
+.compare-header-cell .card-title { font-size: 18px; }
+.compare-header-cell .price { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.compare-header-cell .rec-tag { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--red); }
+.compare-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid var(--border); }
+.compare-row > div { padding: 16px 16px; font-size: 14px; }
+.compare-row .row-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+.compare-row .highlight { font-weight: 600; }
+.compare-insight { padding: 24px; background: rgba(245,245,243,0.5); border-top: 1px solid var(--border); }
+.compare-insight p { font-size: 14px; line-height: 1.65; color: rgba(10,10,10,0.8); }
+
+@media (max-width: 768px) {
+  .compare-header, .compare-row { grid-template-columns: 1fr; }
+  .compare-header-cell:first-child, .compare-row .row-label { display: none; }
+}
+
+/* Memory */
+.memory-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 56px; gap: 24px; flex-wrap: wrap; }
+.toggle-btn {
+  background: none; border: none; cursor: pointer; font-size: 13px; font-weight: 500;
+  color: var(--muted); display: flex; align-items: center; gap: 8px; transition: color 0.2s;
+}
+.toggle-btn:hover { color: var(--fg); }
+.memory-table-header {
+  display: grid; grid-template-columns: 200px 1fr 180px 40px;
+  border-bottom: 1px solid var(--border); background: rgba(245,245,243,0.3);
+}
+.memory-table-header > div { padding: 12px 20px; }
+.memory-row {
+  display: grid; grid-template-columns: 200px 1fr 180px 40px;
+  border-bottom: 1px solid var(--border); align-items: center;
+}
+.memory-row > div { padding: 16px 20px; }
+.memory-row .cat { font-size: 13px; font-weight: 500; color: var(--muted); }
+.memory-row .val { font-size: 14px; }
+.memory-row .src { font-size: 12px; color: var(--muted); }
+.memory-row .del-btn {
+  background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px;
+  color: rgba(142,142,142,0.5); transition: all 0.2s;
+}
+.memory-row .del-btn:hover { color: var(--fg); background: var(--bg); }
+.memory-empty { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
+@media (max-width: 768px) {
+  .memory-table-header { display: none; }
+  .memory-row { grid-template-columns: 1fr 40px; }
+  .memory-row .src { display: none; }
+  .memory-row .cat { grid-column: 1; }
+  .memory-row .val { grid-column: 1; }
+}
+
+/* Actions */
+.action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 768px) { .action-grid { grid-template-columns: 1fr; } }
+.action-card .inner { padding: 28px; display: flex; flex-direction: column; height: 100%; }
+.action-card h3 { font-size: 18px; font-weight: 600; margin: 20px 0 12px; }
+.action-card p { font-size: 14px; line-height: 1.65; color: var(--muted); flex: 1; margin-bottom: 24px; }
+.action-card .cta-btn {
+  background: var(--fg); color: #fff; border: none; border-radius: 12px;
+  padding: 12px 20px; font-size: 13px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; transition: opacity 0.2s;
+}
+.action-card .cta-btn:hover { opacity: 0.85; }
+.action-card .confirmed { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: rgba(10,10,10,0.7); }
+.action-card .confirmed svg { flex-shrink: 0; margin-top: 2px; color: var(--red); }
+
+/* Trust */
+.trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 960px; margin: 0 auto; }
+@media (max-width: 768px) { .trust-grid { grid-template-columns: 1fr; } }
+.trust-item { text-align: center; padding: 28px; }
+.trust-item svg { margin: 0 auto 16px; }
+.trust-item h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.trust-item p { font-size: 14px; line-height: 1.65; color: var(--muted); }
+.trust-footer { margin-top: 64px; text-align: center; font-size: 12px; color: rgba(142,142,142,0.6); }
+
+/* Animations */
+.fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* Check/X SVG icons inline */
+.icon-sm { width: 14px; height: 14px; display: inline-block; vertical-align: middle; }
+.icon-md { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="container inner">
+    <div class="brand">
+      <span class="brand-name">Weiss</span>
+      <span class="brand-sub">by Porsche</span>
+    </div>
+    <nav>
+      <a href="#demo">Assistant</a>
+      <a href="#compare">Compare</a>
+      <a href="#memory">Memory</a>
+      <a href="#action">Next Steps</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="large">
+  <div class="container">
+    <div style="max-width:800px">
+      <p class="eyebrow" style="margin-bottom:24px">Porsche Intelligent Assistant</p>
+      <h1 class="hero-title" style="margin-bottom:24px">Find your Porsche.<br>Know it completely.</h1>
+      <p class="body-text" style="max-width:560px;margin-bottom:48px">Weiss helps you discover, compare, and decide — with the precision and care you expect from Porsche.</p>
+    </div>
+    <div style="max-width:640px">
+      <div class="surface-elevated hero-input-wrap">
+        <input type="text" id="heroInput" placeholder="Ask Weiss anything about Porsche..." />
+        <button onclick="submitHero()">Ask <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+      <div class="prompt-chips">
+        <button class="prompt-chip" onclick="selectPrompt(this)">I want a weekend GT car under $130K</button>
+        <button class="prompt-chip" onclick="selectPrompt(this)">Compare the 911 Carrera T and Cayman GTS</button>
+        <button class="prompt-chip" onclick="selectPrompt(this)">What Porsche suits someone who's never owned one?</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Assistant Demo -->
+<section id="demo" class="bg-card">
+  <div class="container">
+    <p class="eyebrow" style="margin-bottom:16px">Live Assistant</p>
+    <h2 class="section-title" style="margin-bottom:64px">See Weiss respond</h2>
+
+    <div style="max-width:800px;margin:0 auto">
+      <div class="user-msg">
+        <div class="user-msg-bubble" id="userMsgBubble">I want a weekend GT car under $150K</div>
+      </div>
+
+      <div class="assistant-row">
+        <div class="assistant-avatar">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div style="flex:1" id="assistantResponse">
+          <div id="typingIndicator" class="surface" style="padding:20px;display:none">
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+          </div>
+          <div id="responseContent">
+            <p style="font-size:15px;line-height:1.7;color:rgba(10,10,10,0.8);margin-bottom:24px">
+              Based on your interest in a weekend GT car under $150K, here are three options — each with a different character. I've explained the trade-offs so you can decide what matters most.
+            </p>
+
+            <!-- Card 1 -->
+            <div class="surface-elevated rec-card">
+              <div class="inner">
+                <div class="rec-card-header">
+                  <div>
+                    <h3 class="card-title" style="font-size:20px">911 Carrera GTS</h3>
+                    <p class="rec-card-price">From $148,850</p>
+                  </div>
+                  <button class="save-btn" onclick="toggleSave(this)" title="Save">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  </button>
+                </div>
+                <div class="rec-field"><p class="eyebrow">Why it matches</p><p>The widest capability range in the 911 lineup. Equally compelling on a canyon road and a cross-country drive. T-Hybrid powertrain delivers 532 hp with everyday refinement.</p></div>
+                <div class="rec-field"><p class="eyebrow">Trade-off</p><p>Less raw than GT cars. More capable than you may need for city driving alone.</p></div>
+                <div class="rec-field"><p class="eyebrow">Best for</p><p>The driver who wants one Porsche that does everything exceptionally.</p></div>
+                <div class="rec-actions">
+                  <a href="#compare">Compare</a>
+                  <button>Configure</button>
+                  <a href="#action">Contact dealer</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="surface-elevated rec-card">
+              <div class="inner">
+                <div class="rec-card-header">
+                  <div>
+                    <h3 class="card-title" style="font-size:20px">718 Cayman GT4 RS</h3>
+                    <p class="rec-card-price">From $143,050</p>
+                  </div>
+                  <button class="save-btn" onclick="toggleSave(this)" title="Save">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  </button>
+                </div>
+                <div class="rec-field"><p class="eyebrow">Why it matches</p><p>Mid-engine balance with a 4.0L flat-six revving to 9,000 rpm. Closest road car to a GT3 Cup in chassis feel. PDK available.</p></div>
+                <div class="rec-field"><p class="eyebrow">Trade-off</p><p>Limited cargo space. Firm ride on imperfect roads. Attracts attention you may not want.</p></div>
+                <div class="rec-field"><p class="eyebrow">Best for</p><p>The driver chasing corner precision and mechanical connection above all else.</p></div>
+                <div class="rec-actions">
+                  <a href="#compare">Compare</a>
+                  <button>Configure</button>
+                  <a href="#action">Contact dealer</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="surface-elevated rec-card">
+              <div class="inner">
+                <div class="rec-card-header">
+                  <div>
+                    <h3 class="card-title" style="font-size:20px">Taycan 4S</h3>
+                    <p class="rec-card-price">From $106,950</p>
+                  </div>
+                  <button class="save-btn" onclick="toggleSave(this)" title="Save">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  </button>
+                </div>
+                <div class="rec-field"><p class="eyebrow">Why it matches</p><p>Electric performance sedan with over 400 miles of range. Porsche chassis DNA in a silent package. The most advanced tech interior in the lineup.</p></div>
+                <div class="rec-field"><p class="eyebrow">Trade-off</p><p>Requires charging infrastructure commitment. Different throttle character than combustion cars.</p></div>
+                <div class="rec-field"><p class="eyebrow">Best for</p><p>The driver ready for electric performance who still demands a Porsche driving feel.</p></div>
+                <div class="rec-actions">
+                  <a href="#compare">Compare</a>
+                  <button>Configure</button>
+                  <a href="#action">Contact dealer</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Compare -->
+<section id="compare">
+  <div class="container">
+    <p class="eyebrow" style="margin-bottom:16px">Compare</p>
+    <h2 class="section-title" style="margin-bottom:16px">Side by side, clearly</h2>
+    <p class="body-text" style="max-width:520px;margin-bottom:56px">Weiss structures every comparison so you see what matters — not just specs, but what they mean for how you'll use the car.</p>
+
+    <div class="surface-elevated compare-table">
+      <div class="compare-header">
+        <div class="compare-header-cell"></div>
+        <div class="compare-header-cell">
+          <p class="card-title" style="font-size:18px">911 Carrera GTS</p>
+          <p class="price">$148,850</p>
+          <span class="rec-tag">Best all-rounder</span>
+        </div>
+        <div class="compare-header-cell">
+          <p class="card-title" style="font-size:18px">718 Cayman GT4 RS</p>
+          <p class="price">$143,050</p>
+          <span class="rec-tag">Purest driving experience</span>
+        </div>
+      </div>
+      <div class="compare-row"><div class="row-label">Engine</div><div>3.6L Flat-6 T-Hybrid</div><div>4.0L Flat-6 NA</div></div>
+      <div class="compare-row"><div class="row-label">Power</div><div class="highlight">532 hp</div><div>493 hp</div></div>
+      <div class="compare-row"><div class="row-label">Torque</div><div class="highlight">449 lb-ft</div><div>331 lb-ft</div></div>
+      <div class="compare-row"><div class="row-label">Weight</div><div>3,461 lbs</div><div class="highlight">3,227 lbs</div></div>
+      <div class="compare-row"><div class="row-label">0–60 mph</div><div class="highlight">3.1 s</div><div>3.2 s</div></div>
+      <div class="compare-row"><div class="row-label">Daily drivable</div><div>✓</div><div>—</div></div>
+      <div class="compare-row"><div class="row-label">Track capable</div><div>✓</div><div>✓</div></div>
+      <div class="compare-row"><div class="row-label">Cargo</div><div class="highlight">4.6 cu ft</div><div>2.5 cu ft</div></div>
+      <div class="compare-insight">
+        <p class="eyebrow" style="margin-bottom:8px">Weiss insight</p>
+        <p>The GTS is the more versatile car — you can drive it every day and still feel engaged on a mountain road. The GT4 RS is a sharper instrument: lighter, more direct, and higher-revving, but it asks for more commitment. If this is your only Porsche, the GTS. If you already have a daily driver, the GT4 RS.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Memory -->
+<section id="memory" class="bg-card">
+  <div class="container">
+    <div class="memory-header">
+      <div>
+        <p class="eyebrow" style="margin-bottom:16px">Memory</p>
+        <h2 class="section-title" style="margin-bottom:16px">What Weiss remembers</h2>
+        <p class="body-text" style="max-width:480px">Every preference is visible. You control what stays and what goes. Nothing is hidden.</p>
+      </div>
+      <button class="toggle-btn" onclick="toggleMemoryVisibility()">
+        <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span id="visLabel">Preferences visible</span>
+      </button>
+    </div>
+
+    <div class="surface-elevated" style="overflow:hidden" id="memoryTable">
+      <div class="memory-table-header">
+        <div class="eyebrow">Category</div>
+        <div class="eyebrow">Preference</div>
+        <div class="eyebrow">Source</div>
+        <div></div>
+      </div>
+      <div class="memory-row" data-val="Coupé preferred"><div class="cat">Body style</div><div class="val">Coupé preferred</div><div class="src">3 conversations</div><div><button class="del-btn" onclick="removeRow(this)">✕</button></div></div>
+      <div class="memory-row" data-val="Manual when available"><div class="cat">Transmission</div><div class="val">Manual when available</div><div class="src">Stated directly</div><div><button class="del-btn" onclick="removeRow(this)">✕</button></div></div>
+      <div class="memory-row" data-val="Under $150K"><div class="cat">Budget</div><div class="val">Under $150K</div><div class="src">2 searches</div><div><button class="del-btn" onclick="removeRow(this)">✕</button></div></div>
+      <div class="memory-row" data-val="Weekend driving, occasional track"><div class="cat">Use case</div><div class="val">Weekend driving, occasional track</div><div class="src">Inferred</div><div><button class="del-btn" onclick="removeRow(this)">✕</button></div></div>
+      <div class="memory-row" data-val="Darker tones, no bright colors"><div class="cat">Color preference</div><div class="val">Darker tones, no bright colors</div><div class="src">Configuration history</div><div><button class="del-btn" onclick="removeRow(this)">✕</button></div></div>
+      <div class="memory-row" data-val="Leather, minimal options"><div class="cat">Interior</div><div class="val">Leather, minimal options</div><div class="src">Stated directly</div><div><button class="del-btn" onclick="removeRow(this)">✕</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Action -->
+<section id="action">
+  <div class="container">
+    <p class="eyebrow" style="margin-bottom:16px">Next Steps</p>
+    <h2 class="section-title" style="margin-bottom:16px">Conversation becomes action</h2>
+    <p class="body-text" style="max-width:520px;margin-bottom:56px">Weiss turns decisions into next steps. Every action carries your context forward.</p>
+
+    <div class="action-grid">
+      <div class="surface-elevated action-card">
+        <div class="inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <h3>Book a test drive</h3>
+          <p>Weiss reserves a slot at your nearest dealer with the model you've been exploring. No forms, no repeat information.</p>
+          <div id="action0">
+            <button class="cta-btn" onclick="confirmAction(0)">Schedule now <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="surface-elevated action-card">
+        <div class="inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <h3>Connect with your dealer</h3>
+          <p>Your conversation context is shared securely so your advisor already knows where you are in your decision. You never repeat yourself.</p>
+          <div id="action1">
+            <button class="cta-btn" onclick="confirmAction(1)">Contact dealer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="surface-elevated action-card">
+        <div class="inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <h3>Continue in the Porsche app</h3>
+          <p>Everything here transfers to your phone. Open the app and pick up exactly where you left off, including your saved comparisons.</p>
+          <div id="action2">
+            <button class="cta-btn" onclick="confirmAction(2)">Open in app <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust -->
+<section class="bg-card-border">
+  <div class="container" style="text-align:center">
+    <div style="max-width:520px;margin:0 auto 56px">
+      <p class="eyebrow" style="margin-bottom:16px">Privacy &amp; Control</p>
+      <h2 class="section-title" style="margin-bottom:16px">Built on trust</h2>
+      <p class="body-text">Weiss is designed so you never have to wonder what it knows or who has access.</p>
+    </div>
+
+    <div class="trust-grid">
+      <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 16px;display:block"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h3>Your data stays yours</h3>
+        <p>All personal information lives on Porsche infrastructure. Nothing identifiable leaves the system.</p>
+      </div>
+      <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 16px;display:block"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <h3>Full transparency</h3>
+        <p>Every piece of stored data is visible in your data panel. See exactly what Weiss knows and when it was recorded.</p>
+      </div>
+      <div class="trust-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 16px;display:block"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <h3>Delete at any time</h3>
+        <p>Remove individual preferences or clear everything. Changes take effect immediately, with no waiting period.</p>
+      </div>
+    </div>
+
+    <div class="trust-footer">Weiss · Porsche North America · Your assistant, your data, your control</div>
+  </div>
+</section>
+
+<script>
+// Hero input
+function submitHero() {
+  const input = document.getElementById('heroInput');
+  if (input.value.trim()) {
+    document.getElementById('userMsgBubble').textContent = input.value;
+    triggerThinking();
+    input.value = '';
+    document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+function selectPrompt(el) {
+  document.getElementById('userMsgBubble').textContent = el.textContent;
+  triggerThinking();
+  document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+}
+document.getElementById('heroInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitHero();
+});
+
+// Thinking animation
+function triggerThinking() {
+  const typing = document.getElementById('typingIndicator');
+  const content = document.getElementById('responseContent');
+  content.style.display = 'none';
+  typing.style.display = 'block';
+  setTimeout(() => {
+    typing.style.display = 'none';
+    content.style.display = 'block';
+  }, 1800);
+}
+
+// Save toggle
+function toggleSave(btn) {
+  btn.classList.toggle('active');
+  const svg = btn.querySelector('svg path');
+  if (btn.classList.contains('active')) {
+    svg.setAttribute('fill', 'currentColor');
+  } else {
+    svg.setAttribute('fill', 'none');
+  }
+}
+
+// Memory visibility
+let memVisible = true;
+function toggleMemoryVisibility() {
+  memVisible = !memVisible;
+  document.getElementById('visLabel').textContent = memVisible ? 'Preferences visible' : 'Preferences hidden';
+  document.querySelectorAll('.memory-row .val').forEach(el => {
+    const row = el.closest('.memory-row');
+    el.textContent = memVisible ? row.dataset.val : '••••••••';
+  });
+}
+
+// Remove memory row
+function removeRow(btn) {
+  const row = btn.closest('.memory-row');
+  row.style.transition = 'opacity 0.3s';
+  row.style.opacity = '0';
+  setTimeout(() => {
+    row.remove();
+    if (!document.querySelectorAll('.memory-row').length) {
+      const table = document.getElementById('memoryTable');
+      table.innerHTML += '<div class="memory-empty">All preferences cleared. Weiss starts fresh next time.</div>';
+    }
+  }, 300);
+}
+
+// Action confirmations
+const confirmMessages = [
+  'Test drive requested — your dealer will confirm within 2 hours.',
+  'Sent to Porsche of Manhattan — advisor will reach out today.',
+  'Session synced to your Porsche app.'
+];
+function confirmAction(idx) {
+  document.getElementById('action' + idx).innerHTML =
+    '<div class="confirmed"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>' + confirmMessages[idx] + '</span></div>';
+}
+
+// Scroll-triggered fade-in
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
