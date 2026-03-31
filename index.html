@@ -590,7 +590,7 @@ function appendUserMessage(text) {
   div.className = 'user-msg chat-msg-enter';
   div.innerHTML = `<div class="user-msg-bubble">${escHtml(text)}</div>`;
   liveChatMessages.appendChild(div);
-  scrollToBottom(true);
+  scrollToBottom(false);
 }
 
 function createAssistantRow() {
@@ -608,7 +608,7 @@ function createAssistantRow() {
     </div>
   `;
   liveChatMessages.appendChild(row);
-  scrollToBottom(true);
+  scrollToBottom(false);
   return {
     row,
     textEl: row.querySelector('#streamTarget'),
@@ -621,7 +621,7 @@ function appendChatError(msg) {
   div.className = 'chat-error chat-msg-enter';
   div.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${escHtml(msg)}`;
   liveChatMessages.appendChild(div);
-  scrollToBottom(true);
+  scrollToBottom(false);
 }
 
 function escHtml(str) {
@@ -632,9 +632,17 @@ function scrollToBottom(force) {
   const ps = document.getElementById('prototype-screen');
   if (!ps) return;
   const distFromBottom = ps.scrollHeight - ps.scrollTop - ps.clientHeight;
-  if (force || distFromBottom < 200) {
+  if (force || distFromBottom <= 200) {
     ps.scrollTop = ps.scrollHeight;
   }
+}
+
+function scrollToChatSection() {
+  const ps = document.getElementById('prototype-screen');
+  const chat = document.getElementById('liveChatSection');
+  if (!ps || !chat) return;
+  const chatTop = chat.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 60;
+  ps.scrollTo({ top: chatTop, behavior: 'smooth' });
 }
 
 function formatResponseText(text) {
@@ -815,7 +823,7 @@ function addThinkingRow() {
     </div>
   `;
   liveChatMessages.appendChild(thinkingRow);
-  scrollToBottom(true);
+  scrollToBottom(false);
 }
 
 async function streamAssistantResponse(messages, onToken, onDone) {
@@ -928,6 +936,7 @@ async function sendMessage(userText) {
   if (chipsWrap) chipsWrap.style.display = 'none';
 
   appendUserMessage(userText);
+  scrollToChatSection();
   conversationHistory.push({ role: 'user', content: userText });
 
   addThinkingRow();
