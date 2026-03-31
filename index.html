@@ -131,6 +131,10 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .prompt-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
 .prompt-chip { font-size: 12px; font-weight: 500; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-family: inherit; transition: all var(--spring); }
 .prompt-chip:hover { color: var(--text-primary); border-color: var(--border-mid); transform: translateY(-1px); }
+.ask-weiss-fab { position: fixed; bottom: 24px; right: 24px; z-index: 300; display: none; align-items: center; gap: 8px; background: #1a1918; color: #fff; border: none; border-radius: 999px; padding: 12px 16px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 12px 28px rgba(0,0,0,0.18); transition: transform var(--spring), opacity var(--spring); }
+.ask-weiss-fab.visible { display: inline-flex; }
+.ask-weiss-fab:hover { transform: translateY(-1px); opacity: 0.94; }
+.ask-weiss-fab svg { width: 14px; height: 14px; flex-shrink: 0; }
 
 /* ── chat ── */
 .user-msg { display: flex; justify-content: flex-end; margin-bottom: 14px; }
@@ -377,6 +381,14 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 <!-- ═══════════════════════════════════════════
      SCRIPTS
 ═══════════════════════════════════════════ -->
+<button class="ask-weiss-fab" id="askWeissFab" type="button" aria-label="Ask Weiss">
+  Ask Weiss
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 19V5"/>
+    <path d="M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
 <script>
 // ── Tier logic ─────────────────────────────────────────────
 const tiers = [
@@ -520,6 +532,7 @@ const statusDot = document.getElementById('statusDot');
 const statusLabel = document.getElementById('statusLabel');
 const liveChatSection = document.getElementById('liveChatSection');
 const liveChatMessages = document.getElementById('liveChatMessages');
+const askWeissFab = document.getElementById('askWeissFab');
 
 function setStatus(state, label) {
   if (!statusDot || !statusLabel) return;
@@ -542,6 +555,17 @@ function appendUserMessage(text) {
   div.innerHTML = `<div class="user-msg-bubble">${escHtml(text)}</div>`;
   liveChatMessages.appendChild(div);
   scrollToBottom(false);
+  return div;
+}
+
+function scrollToLatestUserMessage(target) {
+  const ps = document.getElementById('prototype-screen');
+  const lastUserMessage = target || liveChatMessages.querySelector('.user-msg:last-of-type');
+  if (!ps || !lastUserMessage) return;
+  requestAnimationFrame(() => {
+    const top = lastUserMessage.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 60;
+    ps.scrollTo({ top, behavior: 'smooth' });
+  });
 }
 
 function createAssistantRow() {
@@ -886,8 +910,9 @@ async function sendMessage(userText) {
   const chipsWrap = document.getElementById('promptChipsWrap');
   if (chipsWrap) chipsWrap.style.display = 'none';
 
-  appendUserMessage(userText);
-  scrollToChatSection();
+  const userMessageEl = appendUserMessage(userText);
+  if (askWeissFab) askWeissFab.classList.add('visible');
+  scrollToLatestUserMessage(userMessageEl);
   conversationHistory.push({ role: 'user', content: userText });
 
   addThinkingRow();
@@ -967,6 +992,13 @@ document.querySelectorAll('.prompt-chip').forEach(chip => {
     window._weissSubmit(chip.textContent.trim());
   }, { capture: true });
 });
+
+if (askWeissFab) {
+  askWeissFab.addEventListener('click', () => {
+    heroInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    heroInput.focus({ preventScroll: true });
+  });
+}
 
 setStatus('ready', 'Ready');
 setInputEnabled(true);
