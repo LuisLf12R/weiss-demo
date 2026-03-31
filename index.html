@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weiss â€” Porsche Intelligent Assistant</title>
+<title>Weiss - Porsche Intelligent Assistant</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,14 +19,14 @@
 html, body { height: 100%; -webkit-font-smoothing: antialiased; }
 body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); color: var(--text-primary); line-height: 1.5; overflow: hidden; }
 
-/* â”€â”€ APP SHELL â”€â”€ */
+/* APP SHELL */
 .app-shell { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 .hidden { display: none !important; }
 .eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); }
 .surface, .surface-elevated { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); }
 .surface-elevated { box-shadow: var(--shadow); }
 
-/* â”€â”€ TOPBAR â”€â”€ */
+/* TOPBAR */
 .topbar { flex-shrink: 0; background: rgba(255,255,255,0.96); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); z-index: 200; }
 .topbar-inner { max-width: 1000px; margin: 0 auto; padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .brand-name { font-family: "DM Serif Display", serif; font-size: 21px; letter-spacing: 0.02em; }
@@ -34,20 +34,23 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .tier-pill { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--border); border-radius: 999px; padding: 6px 13px; font-size: 11px; color: var(--text-secondary); background: var(--surface-soft); transition: all var(--spring); }
 .tier-pill strong { color: var(--text-primary); font-weight: 600; }
 
+/* ── MODEL SELECTOR AREA ── */
+.model-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-mid); flex-shrink: 0; transition: background var(--spring); }
 .status-dot.ready { background: #22c55e; }
 .status-dot.generating { background: var(--accent); animation: status-pulse 0.8s ease-in-out infinite alternate; }
 .status-dot.error { background: var(--accent); }
 @keyframes status-pulse { from { opacity: 0.4; transform: scale(0.85); } to { opacity: 1; transform: scale(1.15); } }
 
+/* ── WEBGPU WARNING ── */
 
-/* â”€â”€ FLOW SCREENS â”€â”€ */
+/* FLOW SCREENS */
 .flow-screen { display: none; flex: 1; min-height: 0; }
 .flow-screen.active { display: flex; flex-direction: column; }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    TIER SCREEN
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ */
 #tier-screen.active { overflow-y: auto; }
 #tier-screen::-webkit-scrollbar { width: 4px; }
 #tier-screen::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
@@ -91,9 +94,9 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .secondary-btn:hover { color: var(--text-primary); border-color: var(--border-mid); }
 .summary-note { margin-top: 10px; font-size: 10px; color: var(--text-muted); line-height: 1.65; }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    PROTOTYPE SCREEN
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ */
 #prototype-screen.active { overflow-y: auto; overflow-x: hidden; background: var(--bg); }
 #prototype-screen::-webkit-scrollbar { width: 4px; }
 #prototype-screen::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
@@ -111,12 +114,12 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
 .section-title { font-family: "DM Serif Display", serif; font-size: clamp(26px, 4vw, 34px); font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 5px; }
 
-/* â”€â”€ context / dealer â”€â”€ */
+/*  --  --  context / dealer  --  --  */
 .context-banner { padding: 11px 15px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
 .context-copy p:first-child { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
 .context-copy p:last-child { font-size: 13px; color: var(--text-secondary); }
 
-/* â”€â”€ hero â”€â”€ */
+/*  --  --  hero  --  --  */
 .hero-title { font-family: "DM Serif Display", serif; font-size: clamp(36px, 6vw, 58px); font-weight: 400; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 13px; }
 .hero-body { font-size: 15px; color: var(--text-secondary); line-height: 1.72; max-width: 480px; margin-bottom: 26px; }
 .hero-input-wrap { display: flex; align-items: center; gap: 7px; padding: 6px; }
@@ -133,7 +136,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .ask-weiss-fab:hover { transform: translateY(-1px); opacity: 0.94; }
 .ask-weiss-fab svg { width: 14px; height: 14px; flex-shrink: 0; }
 
-/* â”€â”€ chat â”€â”€ */
+/*  --  --  chat  --  --  */
 .user-msg { display: flex; justify-content: flex-end; margin-bottom: 14px; }
 .user-msg-bubble { background: var(--text-primary); color: #fff; border-radius: 16px 16px 4px 16px; padding: 11px 16px; max-width: 360px; font-size: 14px; line-height: 1.6; }
 .assistant-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 18px; }
@@ -141,7 +144,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .assistant-avatar svg { width: 11px; height: 11px; fill: none; stroke: #fff; stroke-width: 2; }
 .assistant-body { flex: 1; }
 
-/* â”€â”€ TACHOMETER â”€â”€ */
+/* TACHOMETER */
 .tacho-indicator { display: none; align-items: center; gap: 12px; padding: 12px 15px; }
 .tacho-ring-wrap { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
 .tacho-ring { width: 32px; height: 32px; border-radius: 50%; border: 2.5px solid rgba(155,17,30,0.1); border-top-color: var(--accent); border-right-color: rgba(155,17,30,0.38); animation: tacho-spin 0.7s cubic-bezier(0.25,1,0.5,1) infinite; box-shadow: 0 0 8px rgba(155,17,30,0.18); }
@@ -153,7 +156,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 @keyframes tacho-pulse { from { opacity: 0.15; transform: scale(0.8); } to { opacity: 1; transform: scale(1.2); } }
 @keyframes tacho-sweep { 0% { transform: rotate(-40deg); } 50% { transform: rotate(40deg); } 100% { transform: rotate(-40deg); } }
 
-/* â”€â”€ LIVE CHAT SECTION â”€â”€ */
+/* LIVE CHAT SECTION */
 .live-chat-section { margin-top: 24px; padding-top: 20px; }
 .live-chat-label { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 .live-chat-messages { display: flex; flex-direction: column; gap: 4px; }
@@ -168,7 +171,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .chat-error { display: flex; align-items: center; gap: 8px; padding: 10px 13px; background: rgba(155,17,30,0.05); border: 1px solid rgba(155,17,30,0.14); border-radius: 10px; font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
 .chat-error svg { flex-shrink: 0; color: var(--accent); }
 
-/* â”€â”€ PROFILE PANEL â”€â”€ */
+/* PROFILE PANEL */
 .profile-panel { margin-top: 32px; }
 .profile-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .profile-panel-header h3 { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
@@ -190,7 +193,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .open-q-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border-mid); flex-shrink: 0; margin-top: 5px; }
 .open-q.resolved .open-q-dot { background: #22c55e; }
 
-/* â”€â”€ PRIVACY SECTION â”€â”€ */
+/* PRIVACY SECTION */
 .privacy-section { margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border); }
 .privacy-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px; }
 @media (max-width: 580px) { .privacy-grid { grid-template-columns: 1fr; } }
@@ -199,9 +202,11 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .privacy-item p { font-size: 11px; line-height: 1.65; color: var(--text-muted); }
 .privacy-footer { margin-top: 14px; text-align: center; font-size: 9px; color: rgba(142,142,142,0.5); }
 
-/* â”€â”€ FADE-IN â”€â”€ */
+/*  --  --  FADE-IN  --  --  */
 .fade-in { opacity: 0; transform: translateY(10px); transition: opacity 0.44s cubic-bezier(0.25,1,0.5,1), transform 0.44s cubic-bezier(0.25,1,0.5,1); }
 .fade-in.visible { opacity: 1; transform: none; }
+
+/* ── MODEL LOADING OVERLAY ── */
 
 </style>
 </head>
@@ -212,17 +217,19 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 <div class="topbar">
   <div class="topbar-inner">
     <div><span class="brand-name">Weiss</span><span class="brand-sub">Porsche North America</span></div>
+    <span class="status-dot" id="statusDot" style="display:none;"></span>
+    <span id="statusLabel" style="display:none;">Not loaded</span>
     <div class="tier-pill"><span>Tier</span><strong id="currentTierPill">Personalized</strong></div>
   </div>
 </div>
 
-<!-- â•â•â• TIER SCREEN â•â•â• -->
+<!--  TIER SCREEN  -->
 <div class="flow-screen active" id="tier-screen">
   <div class="tier-inner">
     <div class="tier-hero">
       <p class="eyebrow" style="margin-bottom:11px;">Privacy &amp; consent</p>
       <h1>Choose how Weiss understands you.</h1>
-      <p>Your selection determines what Weiss can learn, remember, and share. This shapes the intelligence layer â€” not a purchase flow. Change it at any time.</p>
+      <p>Your selection determines what Weiss can learn, remember, and share. This shapes the intelligence layer - not a purchase flow. Change it at any time.</p>
     </div>
     <div class="tier-layout">
       <div class="surface-elevated tier-panel" id="tier-list">
@@ -241,7 +248,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
           <div class="tier-copy">
             <div class="tier-label">Personalized</div>
             <div class="tier-name">An assistant that learns</div>
-            <div class="tier-desc">Weiss builds an understanding of you over time â€” your preferences, ownership context, and interests. This stays between you and Weiss.</div>
+            <div class="tier-desc">Weiss builds an understanding of you over time  --  your preferences, ownership context, and interests. This stays between you and Weiss.</div>
             <div class="tier-caps"><span class="cap-pill">Profile formation</span><span class="cap-pill">Preference learning</span><span class="cap-pill">Cross-session memory</span><span class="cap-pill">Private to Weiss</span></div>
             <div class="tier-expanded"><div class="tier-expanded-inner"><p class="eyebrow">What changes</p><p>Weiss develops a persistent understanding of your relationship with Porsche. Your profile is visible and editable at all times.</p></div></div>
           </div>
@@ -273,7 +280,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
   </div>
 </div>
 
-<!-- â•â•â• PROTOTYPE SCREEN â•â•â• -->
+<!--  PROTOTYPE SCREEN  -->
 <div class="flow-screen" id="prototype-screen">
 
   <!-- sticky nav -->
@@ -295,20 +302,20 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
     <!-- HERO -->
     <div class="section" id="s-hero">
       <div class="context-banner surface-elevated fade-in">
-        <div class="context-copy"><p>Intelligence tier</p><p id="heroContextLine">Personalized â€” Weiss is learning about you. Memory and profile formation are active.</p></div>
+        <div class="context-copy"><p>Intelligence tier</p><p id="heroContextLine">Personalized  --  Weiss is learning about you. Memory and profile formation are active.</p></div>
       </div>
       <p class="section-label">Porsche Intelligent Assistant</p>
       <h1 class="hero-title">Ask anything.<br>Weiss is listening.</h1>
       <p class="hero-body" id="heroTierDescription">Weiss understands Porsche deeply and builds an understanding of you over time. Every conversation makes it more useful.</p>
       <div class="surface-elevated hero-input-wrap">
-        <input type="text" id="heroInput" placeholder="Ask Weiss anything about Porscheâ€¦">
+        <input type="text" id="heroInput" placeholder="Ask Weiss anything about Porsche...">
         <button id="heroAskBtn">Ask <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
       </div>
       <div class="prompt-chips" id="promptChipsWrap">
         <button class="prompt-chip">What defines the GT3 driving experience?</button>
         <button class="prompt-chip">I'm considering my first Porsche</button>
         <button class="prompt-chip">How has the 911 evolved since the 997?</button>
-        <button class="prompt-chip">Track days vs daily driving â€” what should I know?</button>
+        <button class="prompt-chip">Track days vs daily driving  --  what should I know?</button>
       </div>
 
       <!-- LIVE CHAT -->
@@ -335,7 +342,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
         </div>
         <div id="profileSignals">
           <div class="profile-empty" id="profileEmpty">
-            Weiss hasn't learned anything yet. Start a conversation and your profile will form here â€” preferences, interests, ownership context, and intent signals.
+            Weiss hasn't learned anything yet. Start a conversation and your profile will form here  --  preferences, interests, ownership context, and intent signals.
           </div>
         </div>
         <div class="open-questions" id="openQuestions">
@@ -343,13 +350,13 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
           <div class="open-q"><span class="open-q-dot"></span>First-time Porsche owner or experienced?</div>
           <div class="open-q"><span class="open-q-dot"></span>Daily driver vs weekend vs collector use?</div>
           <div class="open-q"><span class="open-q-dot"></span>Comfort-biased or performance-biased?</div>
-          <div class="open-q"><span class="open-q-dot"></span>Body style tendency â€” coupe, cabriolet, SUV, sedan?</div>
+          <div class="open-q"><span class="open-q-dot"></span>Body style tendency  --  coupe, cabriolet, SUV, sedan?</div>
           <div class="open-q"><span class="open-q-dot"></span>ICE, hybrid, or EV openness?</div>
           <div class="open-q"><span class="open-q-dot"></span>Heritage interest or current lineup focus?</div>
           <div class="open-q"><span class="open-q-dot"></span>Budget range or sensitivity?</div>
-          <div class="open-q"><span class="open-q-dot"></span>Emotional register â€” aspirational, analytical, nostalgic?</div>
+          <div class="open-q"><span class="open-q-dot"></span>Emotional register  --  aspirational, analytical, nostalgic?</div>
           <div class="open-q"><span class="open-q-dot"></span>Model familiarity depth?</div>
-          <div class="open-q"><span class="open-q-dot"></span>Lifestyle context â€” family, solo, travel?</div>
+          <div class="open-q"><span class="open-q-dot"></span>Lifestyle context  --  family, solo, travel?</div>
         </div>
       </div>
     </div>
@@ -365,7 +372,7 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
           <div class="privacy-item fade-in"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;margin:0 auto;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><h3>Full transparency</h3><p>Every stored signal is visible. Connected sharing can be inspected line by line.</p></div>
           <div class="privacy-item fade-in"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;margin:0 auto;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><h3>Delete at any time</h3><p>Remove individual signals or clear everything. Changes take effect immediately.</p></div>
         </div>
-        <div class="privacy-footer">Weiss Â· Porsche North America Â· Your assistant, your data, your control</div>
+        <div class="privacy-footer">Weiss · Porsche North America · Your assistant, your data, your control</div>
       </div>
     </div>
 
@@ -374,9 +381,9 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 
 </div><!-- end app-shell -->
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- 
      SCRIPTS
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+ -->
 <button class="ask-weiss-fab" id="askWeissFab" type="button" aria-label="Ask Weiss">
   Ask Weiss
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -385,15 +392,16 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
   </svg>
 </button>
 
+<!-- ═══ WEBLLM MODULE ═══ -->
 <script>
-// â”€â”€ Tier logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Tier logic 
 const tiers = [
   {
     name: 'Standard',
     cta: 'Continue with Standard',
     summary: 'Weiss answers with expert Porsche knowledge but starts fresh every session.',
-    hero: 'Weiss knows Porsche deeply. Each session starts fresh â€” no lasting memory, no profile, no shared context.',
-    intro: 'Standard â€” session-only intelligence. No lasting understanding is formed.',
+    hero: 'Weiss knows Porsche deeply. Each session starts fresh  --  no lasting memory, no profile, no shared context.',
+    intro: 'Standard  --  session-only intelligence. No lasting understanding is formed.',
     items: ['Deep Porsche knowledge across all models and eras.', 'No stored memory after the session ends.', 'No profile formation or preference learning.']
   },
   {
@@ -401,15 +409,15 @@ const tiers = [
     cta: 'Continue with Personalized',
     summary: 'Weiss builds a persistent understanding of you while keeping the relationship private.',
     hero: 'Weiss understands Porsche deeply and builds an understanding of you over time. Every conversation makes it more useful.',
-    intro: 'Personalized â€” Weiss is learning about you. Memory and profile formation are active.',
-    items: ['Persistent profile formation across sessions.', 'Preference and intent learning.', 'All data private to Weiss â€” no external sharing.']
+    intro: 'Personalized  --  Weiss is learning about you. Memory and profile formation are active.',
+    items: ['Persistent profile formation across sessions.', 'Preference and intent learning.', 'All data private to Weiss  --  no external sharing.']
   },
   {
     name: 'Connected',
     cta: 'Continue with Connected',
     summary: 'Weiss learns you and securely shares relevant context with your Porsche Center.',
     hero: 'Weiss understands Porsche, builds an understanding of you, and connects that intelligence to your Porsche Center when it matters.',
-    intro: 'Connected â€” your Porsche Center receives relevant signals. Full transparency log active.',
+    intro: 'Connected  --  your Porsche Center receives relevant signals. Full transparency log active.',
     items: ['Everything in Personalized, plus dealer context sharing.', 'Transparency trail for every shared signal.', 'Intelligence that moves across touchpoints.']
   }
 ];
@@ -433,7 +441,8 @@ function selectTier(i) { sel = i; tierOpts.forEach((o,j) => o.classList.toggle('
 tierOpts.forEach(o => o.addEventListener('click', () => selectTier(+o.dataset.tier)));
 contBtn.addEventListener('click', showProto);
 
-  // removed progress bar â€” no longer relevant
+function setProgress(stage) {
+  // removed progress bar — no longer relevant
 }
 
 function showProto() {
@@ -443,7 +452,7 @@ function showProto() {
   applyTier();
   ps.scrollTop = 0;
   setTimeout(observeFI, 80);
-
+  if (typeof window._weissStartModelLoad === 'function') window._weissStartModelLoad();
 }
 function showTier() {
   document.getElementById('prototype-screen').classList.remove('active');
@@ -502,14 +511,14 @@ NEVER invent model names. Only use names from the list above. If unsure, say so.
 Your purpose is to understand this person, not to sell. Build a picture of who they are in relation to Porsche: experience, instincts, curiosity, values.
 
 Behavior:
-- One idea per response. Not three paragraphs covering every angle â€” one precise, considered point.
+- One idea per response. Not three paragraphs covering every angle  --  one precise, considered point.
 - If the answer is one sentence, give one sentence. Length is not quality.
 - Surface the trade-off that actually matters, not all of them.
 - Ask one question when your understanding is incomplete. Never more than one.
 - Never restate what the person just said before answering.
-- Never explain what you are about to do â€” just do it.
+- Never explain what you are about to do  --  just do it.
 - Precise, not enthusiastic. Respect the person's intelligence.
-- Have a point of view. Do not list specs â€” explain what each car asks of its driver.
+- Have a point of view. Do not list specs  --  explain what each car asks of its driver.
 - Never sound like a brochure. Sound like someone who has driven every model.
 
 Response length: Two short paragraphs maximum. Most responses should be one. End with a question only when it would meaningfully change your next answer.`;
@@ -521,15 +530,25 @@ let conversationCount = 0;
 
 const heroInput = document.getElementById('heroInput');
 const heroAskBtn = document.getElementById('heroAskBtn');
+const statusDot = document.getElementById('statusDot');
+const statusLabel = document.getElementById('statusLabel');
 const liveChatSection = document.getElementById('liveChatSection');
 const liveChatMessages = document.getElementById('liveChatMessages');
 const askWeissFab = document.getElementById('askWeissFab');
+
+function setStatus(state, label) {
+  statusDot.className = 'status-dot';
+  if (state === 'ready') statusDot.classList.add('ready');
+  else if (state === 'generating') statusDot.classList.add('generating');
+  else if (state === 'error') statusDot.classList.add('error');
+  statusLabel.textContent = label;
+}
 
 
 function setInputEnabled(enabled) {
   heroInput.disabled = !enabled;
   heroAskBtn.disabled = !enabled;
-  if (enabled) heroInput.placeholder = 'Ask Weiss anything about Porscheâ€¦';
+  if (enabled) heroInput.placeholder = 'Ask Weiss anything about Porsche...';
 }
 
 function appendUserMessage(text) {
@@ -593,6 +612,14 @@ function scrollToBottom(force) {
   if (force || distFromBottom <= 200) {
     ps.scrollTop = ps.scrollHeight;
   }
+}
+
+function scrollToChatSection() {
+  const ps = document.getElementById('prototype-screen');
+  const chat = document.getElementById('liveChatSection');
+  if (!ps || !chat) return;
+  const chatTop = chat.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 60;
+  ps.scrollTo({ top: chatTop, behavior: 'smooth' });
 }
 
 
@@ -769,7 +796,7 @@ function addThinkingRow() {
           <div class="tacho-glow"></div>
           <div class="tacho-needle"></div>
         </div>
-        <span class="tacho-label">Weiss is thinkingâ€¦</span>
+        <span class="tacho-label">Weiss is thinking...</span>
       </div>
     </div>
   `;
@@ -878,6 +905,7 @@ async function sendMessage(userText) {
 
   isGenerating = true;
   conversationCount++;
+  setStatus('generating', 'Thinking');
   setInputEnabled(false);
 
   liveChatSection.style.display = 'block';
@@ -931,10 +959,11 @@ async function sendMessage(userText) {
     console.error('[Weiss API] Inference error:', err);
     removeThinkingRow();
     row.remove();
-    appendChatError('Something didnâ€™t work as expected. Try asking again.');
+    appendChatError("Something didn't work as expected. Try asking again.");
   }
 
   isGenerating = false;
+  setStatus('ready', 'Ready');
   setInputEnabled(true);
 }
 
@@ -974,6 +1003,7 @@ if (askWeissFab) {
   });
 }
 
+setStatus('ready', 'Ready');
 setInputEnabled(true);
 </script>
 </body>
