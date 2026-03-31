@@ -28,6 +28,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 function normalizeMessages(input) {
   const messages = [];
   const systemParts = [];
@@ -126,11 +130,19 @@ app.post('/api/chat', async (req, res) => {
   } catch (error) {
     console.error('Chat endpoint error:', error);
 
+    const statusCode = error.status || 500;
+    const errorType = error.type || 'unknown';
+    const errorMessage =
+      statusCode === 401 ? 'Invalid API key — check ANTHROPIC_API_KEY.' :
+      statusCode === 429 ? 'Rate limit reached — too many requests.' :
+      statusCode === 529 ? 'Anthropic API is overloaded — try again shortly.' :
+      error.message || 'Unexpected error contacting Anthropic.';
+
     if (!res.headersSent) {
-      return res.status(500).json({ error: 'Failed to stream response from Anthropic.' });
+      return res.status(statusCode).json({ error: errorMessage, type: errorType });
     }
 
-    res.write(`event: error\ndata: ${JSON.stringify({ error: error.message || 'Unknown error' })}\n\n`);
+    res.write(`event: error\ndata: ${JSON.stringify({ error: errorMessage })}\n\n`);
     res.end();
   }
 });
