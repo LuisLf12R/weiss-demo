@@ -135,6 +135,13 @@ body { font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); col
 .ask-weiss-fab.visible { display: inline-flex; }
 .ask-weiss-fab:hover { transform: translateY(-1px); opacity: 0.94; }
 .ask-weiss-fab svg { width: 14px; height: 14px; flex-shrink: 0; }
+.build-card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; max-width: 420px; margin-top: 12px; background: var(--surface); box-shadow: var(--shadow); }
+.build-card-image { width: 100%; height: 200px; object-fit: cover; display: block; }
+.build-card-body { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.build-card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+.build-card-name { font-family: "DM Serif Display", serif; font-size: 17px; color: var(--text-primary); line-height: 1.2; }
+.build-card-btn { flex-shrink: 0; background: var(--text-primary); color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; white-space: nowrap; transition: opacity var(--spring); }
+.build-card-btn:hover { opacity: 0.82; }
 
 /*  --  --  chat  --  --  */
 .user-msg { display: flex; justify-content: flex-end; margin-bottom: 14px; }
@@ -518,16 +525,80 @@ Behavior:
 - Never restate what the person just said before answering.
 - Never explain what you are about to do  --  just do it.
 - You can engage with general questions naturally. You are not limited to Porsche topics. Answer briefly as a knowledgeable, thoughtful person would. Only return to cars or driving if the conversation opens naturally toward it -- never force the pivot.
+- You have four curated Porsche builds ready to share. When presenting a build, format your response exactly like this:
+
+First, a short bulleted list of the key spec choices (3-4 items maximum, no prices, no horsepower figures):
+- [Option name]
+- [Option name]
+- [Option name]
+
+Then one sentence of prose explaining why these choices fit the person you have been talking to.
+
+Use the following details for each build:
+
+Build 1 -- Cayenne S E-Hybrid: Moonlight Silver Metallic, 21" RS Spyder Design wheels, Truffle Brown leather interior, Premium Package Plus, panoramic roof. Built for presence and practicality without compromise.
+
+Build 2 -- 911 Carrera GTS: Guards Red, Sport Chrono Package, PASM sport suspension, Black leather interior, 20"/21" staggered wheels. The classic Porsche choice -- unambiguous and earned.
+
+Build 3 -- Taycan 4S: Frozen Berry Metallic, Performance Battery Plus, Slate Grey leather, Bose surround sound, Sport Chrono. Design-forward and fast without announcing it.
+
+Build 4 -- 911 GT3: Shark Blue, Clubsport Package, carbon bucket seats, no rear seats, Weissach Package. Nothing added that does not serve the lap time.
+
+Never write "[Build X card would appear here]" or any placeholder text. Never include a URL in your text response. The card handles the link.
 - Precise, not enthusiastic. Respect the person's intelligence.
 - Have a point of view. Do not list specs  --  explain what each car asks of its driver.
 - Never sound like a brochure. Sound like someone who has driven every model.
 
 Response length: Two short paragraphs maximum. Most responses should be one. End with a question only when it would meaningfully change your next answer.`;
 
+const DEMO_PROFILES = {
+  1: {
+    history: [
+      { role: 'user', content: "I'm looking for something that works for the school run but still feels like a real Porsche on the weekend." },
+      { role: 'assistant', content: "The Cayenne is the honest answer — it doesn't ask you to compromise on either end. The S E-Hybrid gives you the electric range for the daily routine and the performance character when you want it. The question is whether you want the presence of a full-size SUV or whether the Macan's tighter proportions suit you better." },
+      { role: 'user', content: 'I think I want the bigger one. I have three kids.' },
+      { role: 'assistant', content: 'Then the Cayenne makes sense. Space, composure, and it still drives like something you chose rather than something you settled for.' },
+    ],
+    followUp: 'Can you show me what a well-specced Cayenne looks like?',
+    buildData: { name: 'Cayenne S E-Hybrid', image: '/images/cayenne.jpg', url: 'https://porsche-code.com/PTF4S7Q0' },
+  },
+  2: {
+    history: [
+      { role: 'user', content: "I've owned four Porsches. Currently have a 991.2 Carrera S. Thinking about moving to a GTS." },
+      { role: 'assistant', content: 'The GTS is the right move if you want more without going full GT. The 992 GTS closes the gap to GT3 character on the road — the engine is sharper, the chassis setup is more committed, and it still works as a daily. What\'s making you consider the change now?' },
+      { role: 'user', content: "The 991 feels a little soft to me now. I've been doing more track days." },
+      { role: 'assistant', content: 'Then the GTS will feel like the right step. You\'ll notice the difference in how it responds to input — it\'s more alert than the standard Carrera without demanding the commitment of a GT3.' },
+    ],
+    followUp: 'What would you spec on the GTS?',
+    buildData: { name: '911 Carrera GTS', image: '/images/911-gts.jpg', url: 'https://porsche-code.com/PTV8XHP8' },
+  },
+  3: {
+    history: [
+      { role: 'user', content: "I'm torn between the Taycan and a 911. I care about design as much as performance." },
+      { role: 'assistant', content: 'They\'re different expressions of the same brand. The 911 is about driving as the central experience — everything else is secondary. The Taycan leads with presence and technology; the performance is real but it\'s not the whole story. Which one you choose depends on whether you want the car to announce your arrival or reward your involvement.' },
+      { role: 'user', content: 'I think I want people to notice it. And I do a lot of city driving.' },
+      { role: 'assistant', content: 'Then the Taycan is the stronger fit. It\'s quieter in traffic, faster from a standstill than almost anything else on the road, and the interior is closer to a design object than a cockpit.' },
+    ],
+    followUp: 'What spec would you recommend on the Taycan?',
+    buildData: { name: 'Taycan 4S', image: '/images/taycan.jpg', url: 'https://porsche-code.com/PTW3PMI9' },
+  },
+  4: {
+    history: [
+      { role: 'user', content: "I track my car regularly. Looking at the GT3. Never owned one but I've driven a friend's." },
+      { role: 'assistant', content: 'The GT3 is the most honest car in the lineup — it doesn\'t pretend to be anything other than what it is. If you\'ve driven one and it didn\'t scare you, that\'s actually the right sign. What did you think of how it felt?' },
+      { role: 'user', content: "It felt alive. I want that. I'm not interested in comfort options." },
+      { role: 'assistant', content: 'Then spec it lean. Clubsport package, carbon bucket seats, no rear seats. The car rewards that approach — every kilogram you remove sharpens what you already felt.' },
+    ],
+    followUp: 'Show me how you\'d build it.',
+    buildData: { name: '911 GT3', image: '/images/gt3.jpg', url: 'https://porsche-code.com/PTBSNHF1' },
+  },
+};
+
 const conversationHistory = [{ role: 'system', content: SYSTEM_PROMPT }];
 let isGenerating = false;
 let profileSignals = {};
 let conversationCount = 0;
+let pendingDemoBuild = null;
 
 const heroInput = document.getElementById('heroInput');
 const heroAskBtn = document.getElementById('heroAskBtn');
@@ -559,6 +630,48 @@ function appendUserMessage(text) {
   liveChatMessages.appendChild(div);
   scrollToBottom(false);
   return div;
+}
+
+function appendAssistantMessage(text) {
+  const row = document.createElement('div');
+  row.className = 'assistant-row chat-msg-enter';
+  row.innerHTML = `
+    <div class="assistant-avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </div>
+    <div class="assistant-body">
+      <div class="assistant-text">${formatResponseText(text)}</div>
+    </div>
+  `;
+  liveChatMessages.appendChild(row);
+}
+
+function appendBuildCard(buildData) {
+  const row = document.createElement('div');
+  row.className = 'assistant-row chat-msg-enter';
+  row.innerHTML = `
+    <div class="assistant-avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </div>
+    <div class="assistant-body">
+      <div class="build-card">
+        <img class="build-card-image" src="${buildData.image}" alt="${buildData.name}">
+        <div class="build-card-body">
+          <div>
+            <div class="build-card-label">Curated build</div>
+            <div class="build-card-name">${buildData.name}</div>
+          </div>
+          <a class="build-card-btn" href="${buildData.url}" target="_blank" rel="noopener">View build</a>
+        </div>
+      </div>
+    </div>
+  `;
+  liveChatMessages.appendChild(row);
+  scrollToBottom(false);
 }
 
 function scrollToLatestUserMessage(target) {
@@ -775,6 +888,81 @@ function updateProfileUI() {
   });
 }
 
+function loadDemoProfile(profileId) {
+  const profile = DEMO_PROFILES[profileId];
+  if (!profile) return;
+
+  isGenerating = false;
+  pendingDemoBuild = profile.buildData;
+
+  conversationHistory.length = 0;
+  conversationHistory.push({ role: 'system', content: SYSTEM_PROMPT });
+
+  profileSignals = {};
+  if (profileId === 1) {
+    profileSignals = {
+      'Experience': { val: 'Current or past owner', conf: 'Stated' },
+      'Use case': { val: 'Daily driver', conf: 'Stated' },
+      'Lifestyle': { val: 'Family considerations', conf: 'Stated' },
+      'Performance bias': { val: 'Balanced', conf: 'Inferred' },
+      'Body interest': { val: 'SUV segment', conf: 'Inferred' },
+      'Powertrain': { val: 'Hybrid-open', conf: 'Inferred' },
+      'Budget': { val: 'Open budget', conf: 'Inferred' },
+      'Emotional register': { val: 'Pragmatic', conf: 'Inferred' }
+    };
+  } else if (profileId === 2) {
+    profileSignals = {
+      'Experience': { val: 'Seasoned owner', conf: 'Stated' },
+      'Use case': { val: 'Track / performance', conf: 'Stated' },
+      'Body interest': { val: '911 family', conf: 'Stated' },
+      'Model familiarity': { val: 'Deep 911 knowledge', conf: 'Stated' },
+      'Performance bias': { val: 'Performance-focused', conf: 'Inferred' },
+      'Powertrain': { val: 'ICE purist', conf: 'Inferred' },
+      'Heritage': { val: 'Current lineup', conf: 'Inferred' },
+      'Emotional register': { val: 'Analytical', conf: 'Inferred' }
+    };
+  } else if (profileId === 3) {
+    profileSignals = {
+      'Experience': { val: 'First-time interest', conf: 'Stated' },
+      'Use case': { val: 'Daily driver', conf: 'Stated' },
+      'Lifestyle': { val: 'Solo driving', conf: 'Inferred' },
+      'Body interest': { val: 'GT touring / sedan', conf: 'Inferred' },
+      'Powertrain': { val: 'EV-curious', conf: 'Stated' },
+      'Performance bias': { val: 'Balanced', conf: 'Inferred' },
+      'Budget': { val: 'Open budget', conf: 'Inferred' },
+      'Emotional register': { val: 'Aspirational', conf: 'Inferred' }
+    };
+  } else if (profileId === 4) {
+    profileSignals = {
+      'Experience': { val: 'Current or past owner', conf: 'Stated' },
+      'Use case': { val: 'Track / performance', conf: 'Stated' },
+      'Body interest': { val: '911 family', conf: 'Stated' },
+      'Model familiarity': { val: 'Deep 911 knowledge', conf: 'Inferred' },
+      'Performance bias': { val: 'Performance-focused', conf: 'Stated' },
+      'Powertrain': { val: 'ICE purist', conf: 'Inferred' },
+      'Lifestyle': { val: 'Solo driving', conf: 'Inferred' },
+      'Emotional register': { val: 'Analytical', conf: 'Inferred' }
+    };
+  }
+  liveChatMessages.innerHTML = '';
+  liveChatSection.style.display = 'block';
+  const chipsWrap = document.getElementById('promptChipsWrap');
+  if (chipsWrap) chipsWrap.style.display = 'none';
+  if (askWeissFab) askWeissFab.classList.add('visible');
+  updateProfileUI();
+
+  profile.history.forEach((entry) => {
+    conversationHistory.push(entry);
+    if (entry.role === 'user') {
+      appendUserMessage(entry.content);
+    } else if (entry.role === 'assistant') {
+      appendAssistantMessage(entry.content);
+    }
+  });
+
+  setTimeout(() => sendMessage(profile.followUp), 0);
+}
+
 function removeThinkingRow() {
   const tr = document.getElementById('liveThinkingRow');
   if (tr) tr.remove();
@@ -956,10 +1144,15 @@ async function sendMessage(userText) {
     if (typeof extractProfileSignals === 'function') {
       extractProfileSignals(userText, fullText);
     }
+    if (pendingDemoBuild) {
+      appendBuildCard(pendingDemoBuild);
+      pendingDemoBuild = null;
+    }
   } catch (err) {
     console.error('[Weiss API] Inference error:', err);
     removeThinkingRow();
     row.remove();
+    pendingDemoBuild = null;
     appendChatError("Something didn't work as expected. Try asking again.");
   }
 
@@ -995,6 +1188,17 @@ document.querySelectorAll('.prompt-chip').forEach(chip => {
   chip.addEventListener('click', () => {
     window._weissSubmit(chip.textContent.trim());
   }, { capture: true });
+});
+
+document.addEventListener('keydown', (event) => {
+  if (!event.shiftKey) return;
+  const codeMap = { 'Digit1': 1, 'Digit2': 2, 'Digit3': 3, 'Digit4': 4 };
+  const profileId = codeMap[event.code];
+  if (!profileId) return;
+  const ps = document.getElementById('prototype-screen');
+  if (!ps || !ps.classList.contains('active')) return;
+  event.preventDefault();
+  loadDemoProfile(profileId);
 });
 
 if (askWeissFab) {
