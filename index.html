@@ -284,20 +284,45 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
   .context-banner { padding: 0 0 14px; }
 
   /* Pinned input bar */
-  .hero-input-wrap {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 500;
-    margin: 0;
-    padding: 12px 16px;
-    background: rgba(255,255,255,0.97);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
-    border-bottom: none;
-  }
-  .hero-input-wrap input { font-size: 16px; padding: 10px 0; }
+    .hero-input-wrap {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 500;
+      margin: 0;
+      padding: 12px 16px 28px;
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      border-bottom: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-input-wrap input {
+      font-size: 15px;
+      padding: 10px 0;
+      flex: 1;
+      color: var(--text-primary);
+    }
+    .hero-input-wrap button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--cta);
+      color: #fff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 0;
+      cursor: pointer;
+      transition: opacity var(--spring);
+    }
+    .hero-input-wrap button:hover { opacity: 0.8; }
+    .hero-input-wrap button:disabled { opacity: 0.3; cursor: not-allowed; }
+    .hero-input-wrap button svg { width: 16px; height: 16px; }
 
   /* Hide prompt chips on mobile after first message */
   .prompt-chips { gap: 6px; margin-top: 10px; margin-bottom: 8px; }
