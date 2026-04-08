@@ -149,8 +149,6 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
 .context-banner { padding: 0 0 20px 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 0; background: transparent; border: none; box-shadow: none; }
 .context-copy p:first-child { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
 .context-copy p:last-child { font-size: 12px; color: var(--text-muted); }
-.mobile-tab-bar { display: none; }
-
 /*  --  --  hero  --  --  */
 .hero-title { font-family: "Porsche Next", Arial, sans-serif; font-size: clamp(36px, 6vw, 58px); font-weight: 400; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 13px; color: var(--text-primary); }
 .hero-body { font-size: 15px; color: var(--text-secondary); line-height: 1.72; max-width: 480px; margin-bottom: 26px; }
@@ -362,45 +360,8 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
   /* Tier selection summary button */
   .primary-btn { font-size: 11px; padding: 14px; }
   .primary-btn:hover { opacity: 0.88; }
-
-  /* Bottom tab bar */
-  .mobile-tab-bar {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 600;
-    background: rgba(255,255,255,0.97);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
-    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
-  }
-  .mobile-tab {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 0;
-    color: var(--text-muted);
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    transition: color var(--spring);
-  }
-  .mobile-tab.active { color: var(--text-primary); }
-  .mobile-tab svg { transition: stroke var(--spring); }
-  .mobile-tab.active svg { stroke: var(--text-primary); }
-
-  /* Adjust bottom padding to account for tab bar */
-  .proto-main { padding-bottom: 100px; }
-  .hero-input-wrap { bottom: 72px; }
   .desktop-float-input { display: none !important; }
+
   }
 
 </style>
@@ -611,24 +572,6 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
 
   </div>
   </div>
-  <nav class="mobile-tab-bar" id="mobileTabBar">
-    <button class="mobile-tab active" data-tab="ask" onclick="switchMobileTab('ask')">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      <span>Ask</span>
-    </button>
-    <button class="mobile-tab" data-tab="discover" onclick="switchMobileTab('discover')">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-      <span>Explore</span>
-    </button>
-    <button class="mobile-tab" data-tab="privacy" onclick="switchMobileTab('privacy')">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <span>Privacy</span>
-    </button>
-    <button class="mobile-tab" data-tab="tier" onclick="switchMobileTab('tier')">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
-      <span>Account</span>
-    </button>
-  </nav>
   <div class="desktop-float-input" id="desktopFloatInput" style="display:none;">
     <div class="desktop-float-wrap">
       <input type="text" id="floatInput" placeholder="Ask Weiss anything...">
@@ -1604,33 +1547,6 @@ if (askWeissFab) {
     heroInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
     heroInput.focus({ preventScroll: true });
   });
-}
-
-function switchMobileTab(tab) {
-  if (window.innerWidth > 768) return;
-  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  const ps = document.getElementById('protoScroll');
-  if (tab === 'ask') {
-    const hero = document.getElementById('s-hero');
-    if (hero && ps) ps.scrollTo({ top: 0, behavior: 'smooth' });
-    heroInput.focus();
-  } else if (tab === 'discover') {
-    const privacy = document.getElementById('s-privacy');
-    if (privacy && ps) {
-      const top = privacy.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 16;
-      ps.scrollTo({ top, behavior: 'smooth' });
-    }
-  } else if (tab === 'privacy') {
-    const privacy = document.getElementById('s-privacy');
-    if (privacy && ps) {
-      const top = privacy.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 16;
-      ps.scrollTo({ top, behavior: 'smooth' });
-    }
-  } else if (tab === 'tier') {
-    showTier();
-  }
-  const tabBar = document.getElementById('mobileTabBar');
-  if (tabBar) tabBar.style.display = tab === 'tier' ? 'none' : 'flex';
 }
 
 setStatus('ready', 'Ready');
