@@ -950,7 +950,6 @@ function createAssistantRow() {
     </div>
   `;
   liveChatMessages.appendChild(row);
-  scrollToBottom(false);
   return {
     row,
     textEl: row.querySelector('#streamTarget'),
@@ -1388,7 +1387,6 @@ async function sendMessage(userText) {
 
       fullText += token;
       textEl.innerHTML = formatResponseText(fullText) + '<span class="streaming-cursor"></span>';
-      scrollToBottom(false);
     }, () => {});
 
     removeThinkingRow();
