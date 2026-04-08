@@ -291,7 +291,7 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
     #prototype-screen.active { display: flex; flex-direction: column; overflow: hidden; }
   .proto-content-wrap { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 .proto-main { flex: 1; overflow-y: auto; padding: 0 0 180px; }
-  .proto-content { padding: 0 16px 220px; }
+  .proto-content { padding: 0 16px 24px; }
 
   /* Hero section */
   .section { padding-top: 24px; }
@@ -894,10 +894,14 @@ function escHtml(str) {
 
 function scrollToBottom(force) {
   const ps = document.getElementById('protoScroll');
-  if (!ps) return;
+  const messages = document.getElementById('liveChatMessages');
+  if (!ps || !messages) return;
+  const lastChild = messages.lastElementChild;
+  if (!lastChild) { ps.scrollTop = ps.scrollHeight; return; }
   const distFromBottom = ps.scrollHeight - ps.scrollTop - ps.clientHeight;
-  if (force || distFromBottom <= 200) {
-    ps.scrollTop = ps.scrollHeight;
+  if (force || distFromBottom <= 300) {
+    const offset = lastChild.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 16;
+    ps.scrollTo({ top: offset, behavior: 'auto' });
   }
 }
 
