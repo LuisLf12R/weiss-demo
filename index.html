@@ -149,6 +149,7 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
 .context-banner { padding: 0 0 20px 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 0; background: transparent; border: none; box-shadow: none; }
 .context-copy p:first-child { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
 .context-copy p:last-child { font-size: 12px; color: var(--text-muted); }
+.mobile-tab-bar { display: none; }
 
 /*  --  --  hero  --  --  */
 .hero-title { font-family: "Porsche Next", Arial, sans-serif; font-size: clamp(36px, 6vw, 58px); font-weight: 400; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 13px; color: var(--text-primary); }
@@ -159,6 +160,13 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
 .hero-input-wrap button { background: none; border: none; cursor: pointer; color: var(--text-primary); padding: 14px 0 14px 16px; display: flex; align-items: center; transition: opacity var(--spring); flex-shrink: 0; }
 .hero-input-wrap button:hover { opacity: 0.5; }
 .hero-input-wrap button:disabled { opacity: 0.25; cursor: not-allowed; }
+.desktop-float-input { display: none; position: fixed; bottom: 32px; left: 0; right: 0; z-index: 400; pointer-events: none; }
+.desktop-float-wrap { max-width: 580px; margin: 0 auto; padding: 0 28px; pointer-events: all; display: flex; align-items: center; gap: 0; background: #ffffff; border: 1px solid var(--border-mid); border-radius: 999px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); padding: 6px 6px 6px 24px; }
+.desktop-float-wrap input { flex: 1; background: transparent; border: none; outline: none; padding: 10px 0; font-size: 14px; color: var(--text-primary); font-family: inherit; }
+.desktop-float-wrap input::placeholder { color: var(--text-muted); }
+.desktop-float-wrap button { background: #000000; color: #ffffff; border: none; border-radius: 999px; width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: opacity var(--spring); }
+.desktop-float-wrap button:hover { opacity: 0.8; }
+.desktop-float-wrap button:disabled { opacity: 0.25; cursor: not-allowed; }
 .prompt-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
 .prompt-chip { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-muted); background: transparent; border: 1px solid var(--border); border-radius: 2px; padding: 7px 13px; cursor: pointer; font-family: inherit; transition: all var(--spring); }
 .prompt-chip:hover { color: var(--text-primary); border-color: var(--border-mid); transform: none; }
@@ -353,7 +361,47 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
 
   /* Tier selection summary button */
   .primary-btn { font-size: 11px; padding: 14px; }
-}
+  .primary-btn:hover { opacity: 0.88; }
+
+  /* Bottom tab bar */
+  .mobile-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 600;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  }
+  .mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition: color var(--spring);
+  }
+  .mobile-tab.active { color: var(--text-primary); }
+  .mobile-tab svg { transition: stroke var(--spring); }
+  .mobile-tab.active svg { stroke: var(--text-primary); }
+
+  /* Adjust bottom padding to account for tab bar */
+  .proto-main { padding-bottom: 100px; }
+  .hero-input-wrap { bottom: 72px; }
+  .desktop-float-input { display: none !important; }
+  }
 
 </style>
 </head>
@@ -562,7 +610,36 @@ body { font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif; backgroun
     </div>
 
   </div>
-</div>
+  </div>
+  <nav class="mobile-tab-bar" id="mobileTabBar">
+    <button class="mobile-tab active" data-tab="ask" onclick="switchMobileTab('ask')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Ask</span>
+    </button>
+    <button class="mobile-tab" data-tab="discover" onclick="switchMobileTab('discover')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      <span>Explore</span>
+    </button>
+    <button class="mobile-tab" data-tab="privacy" onclick="switchMobileTab('privacy')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Privacy</span>
+    </button>
+    <button class="mobile-tab" data-tab="tier" onclick="switchMobileTab('tier')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
+      <span>Account</span>
+    </button>
+  </nav>
+  <div class="desktop-float-input" id="desktopFloatInput" style="display:none;">
+    <div class="desktop-float-wrap">
+      <input type="text" id="floatInput" placeholder="Ask Weiss anything...">
+      <button id="floatAskBtn" aria-label="Ask">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+          <path d="M11 1L17 7L11 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="17" y1="7" x2="1" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
 
 </div><!-- end app-shell -->
 
@@ -794,6 +871,7 @@ function setInputEnabled(enabled) {
   heroInput.disabled = !enabled;
   heroAskBtn.disabled = !enabled;
   if (enabled) heroInput.placeholder = 'Ask Weiss anything about Porsche...';
+  setFloatInputEnabled(enabled);
 }
 
 function appendUserMessage(text) {
@@ -1283,6 +1361,7 @@ async function sendMessage(userText) {
   if (chipsWrap) chipsWrap.style.display = 'none';
 
   const userMessageEl = appendUserMessage(userText);
+  showDesktopFloatInput();
   if (askWeissFab) askWeissFab.classList.add('visible');
   scrollToLatestUserMessage(userMessageEl);
   conversationHistory.push({ role: 'user', content: userText });
@@ -1364,13 +1443,50 @@ heroInput.addEventListener('keydown', (e) => {
   }
 }, { capture: true });
 
-document.querySelectorAll('.prompt-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    window._weissSubmit(chip.textContent.trim());
-  }, { capture: true });
-});
+  document.querySelectorAll('.prompt-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      window._weissSubmit(chip.textContent.trim());
+    }, { capture: true });
+  });
 
-document.addEventListener('keydown', (event) => {
+  // Desktop floating pill
+  const desktopFloatInput = document.getElementById('desktopFloatInput');
+  const floatInput = document.getElementById('floatInput');
+  const floatAskBtn = document.getElementById('floatAskBtn');
+
+  function showDesktopFloatInput() {
+    if (window.innerWidth <= 768) return;
+    if (desktopFloatInput) desktopFloatInput.style.display = 'block';
+  }
+
+  function setFloatInputEnabled(enabled) {
+    if (!floatInput || !floatAskBtn) return;
+    floatInput.disabled = !enabled;
+    floatAskBtn.disabled = !enabled;
+  }
+
+  if (floatAskBtn) {
+    floatAskBtn.addEventListener('click', () => {
+      const val = floatInput.value.trim();
+      if (!val) return;
+      floatInput.value = '';
+      window._weissSubmit(val);
+    });
+  }
+
+  if (floatInput) {
+    floatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = floatInput.value.trim();
+        if (!val) return;
+        e.preventDefault();
+        floatInput.value = '';
+        window._weissSubmit(val);
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (event) => {
   if (!event.shiftKey) return;
   const codeMap = { 'Digit1': 1, 'Digit2': 2, 'Digit3': 3, 'Digit4': 4 };
   const profileId = codeMap[event.code];
@@ -1490,6 +1606,33 @@ if (askWeissFab) {
     heroInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
     heroInput.focus({ preventScroll: true });
   });
+}
+
+function switchMobileTab(tab) {
+  if (window.innerWidth > 768) return;
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  const ps = document.getElementById('protoScroll');
+  if (tab === 'ask') {
+    const hero = document.getElementById('s-hero');
+    if (hero && ps) ps.scrollTo({ top: 0, behavior: 'smooth' });
+    heroInput.focus();
+  } else if (tab === 'discover') {
+    const privacy = document.getElementById('s-privacy');
+    if (privacy && ps) {
+      const top = privacy.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 16;
+      ps.scrollTo({ top, behavior: 'smooth' });
+    }
+  } else if (tab === 'privacy') {
+    const privacy = document.getElementById('s-privacy');
+    if (privacy && ps) {
+      const top = privacy.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 16;
+      ps.scrollTo({ top, behavior: 'smooth' });
+    }
+  } else if (tab === 'tier') {
+    showTier();
+  }
+  const tabBar = document.getElementById('mobileTabBar');
+  if (tabBar) tabBar.style.display = tab === 'tier' ? 'none' : 'flex';
 }
 
 setStatus('ready', 'Ready');
