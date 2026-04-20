@@ -936,14 +936,13 @@
     }
 
     .assistant-avatar-text {
-      color: #ffffff;
+      color: #ffffff !important;
       font-family: "Porsche Next", Arial, sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
       line-height: 1;
-      margin-top: 1px;
-      margin-left: 1px;
+      display: block;
     }
 
     .assistant-body {
@@ -2670,11 +2669,7 @@ Response length: Two short paragraphs maximum. Most responses should be one. End
       row.className = 'assistant-row chat-msg-enter';
       row.innerHTML = `
     <div class="assistant-avatar">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-        <path d="M2 17l10 5 10-5"></path>
-        <path d="M2 12l10 5 10-5"></path>
-      </svg>
+      <span class="assistant-avatar-text">W</span>
     </div>
     <div class="assistant-body">
       <div class="assistant-text">${formatResponseText(text)}</div>
@@ -2688,11 +2683,7 @@ Response length: Two short paragraphs maximum. Most responses should be one. End
       row.className = 'assistant-row chat-msg-enter';
       row.innerHTML = `
     <div class="assistant-avatar">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-        <path d="M2 17l10 5 10-5"></path>
-        <path d="M2 12l10 5 10-5"></path>
-      </svg>
+      <span class="assistant-avatar-text">W</span>
     </div>
     <div class="assistant-body">
       <div class="build-card">
@@ -2726,11 +2717,7 @@ Response length: Two short paragraphs maximum. Most responses should be one. End
       row.className = 'assistant-row chat-msg-enter';
       row.innerHTML = `
     <div class="assistant-avatar">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-        <path d="M2 17l10 5 10-5"></path>
-        <path d="M2 12l10 5 10-5"></path>
-      </svg>
+      <span class="assistant-avatar-text">W</span>
     </div>
     <div class="assistant-body">
       <div class="assistant-text" id="streamTarget"></div>
@@ -3018,11 +3005,7 @@ Response length: Two short paragraphs maximum. Most responses should be one. End
       thinkingRow.id = 'liveThinkingRow';
       thinkingRow.innerHTML = `
     <div class="assistant-avatar">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-        <path d="M2 17l10 5 10-5"></path>
-        <path d="M2 12l10 5 10-5"></path>
-      </svg>
+      <span class="assistant-avatar-text">W</span>
     </div>
     <div class="assistant-body">
       <div class="tacho-indicator" style="display:flex;">
