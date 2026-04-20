@@ -227,33 +227,36 @@
     
     .image-preview {
       display: none;
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
       background-size: cover;
       background-position: center;
-      margin-left: 8px;
+      margin-right: 12px;
       border: 1px solid var(--border-mid);
       position: relative;
+      flex-shrink: 0;
     }
     .image-preview.has-image {
       display: block !important;
     }
     .image-preview-remove {
       position: absolute;
-      top: -6px;
-      right: -6px;
+      top: -8px;
+      right: -8px;
       background: #000;
       color: #fff;
       border-radius: 50%;
-      width: 14px;
-      height: 14px;
-      font-size: 10px;
+      width: 18px;
+      height: 18px;
+      font-size: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       border: none;
+      padding: 0;
+      line-height: 1;
     }
 
     /* ── WEBGPU WARNING ── */
@@ -633,16 +636,22 @@
       font-size: 15px;
     }
 
-    .hero-input-wrap button {
+    .hero-input-wrap button#heroAskBtn,
+    .hero-input-wrap button.plus-btn,
+    .desktop-float-wrap button#floatAskBtn,
+    .desktop-float-wrap button.plus-btn {
       background: none;
       border: none;
       cursor: pointer;
       color: var(--text-primary);
-      padding: 14px 0 14px 16px;
       display: flex;
       align-items: center;
       transition: opacity var(--spring);
       flex-shrink: 0;
+    }
+    
+    .hero-input-wrap button#heroAskBtn {
+      padding: 14px 0 14px 16px;
     }
 
     .hero-input-wrap button.plus-btn {
@@ -1514,7 +1523,7 @@
         padding: 8px 12px 8px 0;
       }
 
-      .hero-input-wrap button:not(.plus-btn) {
+      .hero-input-wrap button#heroAskBtn {
         background: #000000;
         color: #ffffff;
         border-radius: 999px;
@@ -1528,7 +1537,7 @@
         transition: opacity var(--spring);
       }
 
-      .hero-input-wrap button:not(.plus-btn):hover {
+      .hero-input-wrap button#heroAskBtn:hover {
         opacity: 0.8;
       }
 
