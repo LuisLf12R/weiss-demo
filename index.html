@@ -1,0 +1,3411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23000'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-size='18' font-weight='700' fill='white'>W</text></svg>">
+    <title>Weiss — Porsche North America</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f2f2f2;
+            --surface: #ffffff;
+            --surface-soft: #f7f7f7;
+            --border: #e0e0e0;
+            --border-mid: #c8c8c8;
+            --text-primary: #1a1a1a;
+            --text-secondary: #626262;
+            --text-muted: #6e6e6e;
+            --text-faint: #757575;
+            --accent: #c00016;
+            --cta: #000000;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --radius: 0px;
+            --max-w: 680px;
+            --spring: 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        html,
+        body {
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        body {
+            font-family: "Porsche Next", "Arial Narrow", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* APP SHELL */
+        .app-shell {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .eyebrow {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--text-muted);
+        }
+
+        .surface,
+        .surface-elevated {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .surface-elevated {
+            box-shadow: var(--shadow);
+        }
+
+        /* TOPBAR */
+        .topbar {
+            flex-shrink: 0;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            z-index: 200;
+        }
+
+        .topbar-inner {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 28px;
+            height: 56px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .topbar-wordmark {
+            font-family: "Porsche Next", Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            color: var(--text-primary);
+        }
+
+        .topbar-back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 8px;
+            margin-left: -8px;
+            transition: opacity var(--spring);
+        }
+
+        .topbar-back-btn:hover {
+            opacity: 0.5;
+        }
+
+        .tier-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 0.04em;
+        }
+
+        .tier-pill strong {
+            color: var(--text-primary);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        /* ── MODEL SELECTOR AREA ── */
+        .model-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--border-mid);
+            flex-shrink: 0;
+            transition: background var(--spring);
+        }
+
+        .status-dot.ready {
+            background: #22c55e;
+        }
+
+        .status-dot.generating {
+            background: var(--accent);
+            animation: status-pulse 0.8s ease-in-out infinite alternate;
+        }
+
+        .status-dot.error {
+            background: var(--accent);
+        }
+
+        @keyframes status-pulse {
+            from {
+                opacity: 0.4;
+                transform: scale(0.85);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+        }
+
+        /* ── WEBGPU WARNING ── */
+
+        /* FLOW SCREENS */
+        .flow-screen {
+            display: none;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .flow-screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* PROTOTYPE SCREEN */
+        #prototype-screen.active {
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: var(--bg);
+        }
+
+        #prototype-screen::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #prototype-screen::-webkit-scrollbar-thumb {
+            background: var(--border-mid);
+            border-radius: 2px;
+        }
+
+        /* EXEC / CONSUMER VIEW */
+        .proto-content-wrap {
+            display: flex;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .proto-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+            min-width: 0;
+        }
+
+        .proto-main::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .proto-main::-webkit-scrollbar-thumb {
+            background: var(--border-mid);
+            border-radius: 2px;
+        }
+
+        .proto-intel {
+            width: 380px;
+            flex-shrink: 0;
+            border-left: 1px solid rgba(0, 0, 0, 0.06);
+            background: #fafafa;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 1px 0 0 rgba(255, 255, 255, 1);
+        }
+
+        .proto-intel::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .proto-intel::-webkit-scrollbar-thumb {
+            background: var(--border-mid);
+            border-radius: 2px;
+        }
+
+        .proto-intel-header {
+            padding: 40px 32px 28px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+        }
+
+        .proto-intel-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .proto-intel-label::before {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .proto-archetype {
+            font-family: "Porsche Next", Arial, sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--text-primary);
+            line-height: 1.1;
+            margin-bottom: 6px;
+            min-height: 26px;
+            letter-spacing: -0.02em;
+        }
+
+        .proto-archetype-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+            line-height: 1.5;
+        }
+
+        .proto-intel-section {
+            padding: 28px 32px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .proto-intel-section-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .proto-next-action {
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 16px 20px;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        .proto-next-action-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .intel-signal {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: start;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            gap: 12px;
+        }
+
+        .intel-signal:last-child {
+            border-bottom: none;
+        }
+
+        .intel-signal-cat {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .intel-signal-val {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-primary);
+            letter-spacing: 0.01em;
+        }
+
+        .intel-signal-conf {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        .intel-signal-conf.inferred {
+            color: var(--accent);
+        }
+
+        .intel-open-q {
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.6;
+        }
+
+        .intel-open-q:last-child {
+            border-bottom: none;
+        }
+
+        .intel-open-q-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--border-mid);
+            flex-shrink: 0;
+            margin-top: 4px;
+            transition: background var(--spring);
+        }
+
+        .intel-open-q.resolved .intel-open-q-dot {
+            background: var(--accent);
+        }
+
+        .intel-open-q.resolved {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            text-decoration-color: var(--border-mid);
+        }
+
+        .intel-confidence {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .intel-confidence-track {
+            flex: 1;
+            height: 2px;
+            background: rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .intel-confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9b111e, var(--accent));
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .intel-confidence-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .consumer-view .proto-intel {
+            display: none;
+        }
+
+        .consumer-view #s-profile {
+            display: none;
+        }
+
+        #s-profile {
+            display: none;
+        }
+
+        /* content column */
+        .proto-content {
+            max-width: var(--max-w);
+            margin: 0 auto;
+            padding: 0 28px 80px;
+            width: 100%;
+        }
+
+        .section {
+            padding-top: 40px;
+        }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-family: "Porsche Next", Arial, sans-serif;
+            font-size: clamp(26px, 4vw, 34px);
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 5px;
+        }
+
+        /*  --  --  context / dealer  --  --  */
+        .context-banner {
+            padding: 0 0 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .context-copy p:first-child {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 2px;
+        }
+
+        .context-copy p:last-child {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /*  --  --  hero  --  --  */
+        .hero-title {
+            font-family: "Porsche Next", Arial, sans-serif;
+            font-size: clamp(36px, 6vw, 58px);
+            font-weight: 400;
+            letter-spacing: -0.025em;
+            line-height: 1.05;
+            margin-bottom: 13px;
+            color: var(--text-primary);
+        }
+
+        .hero-body {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.72;
+            max-width: 480px;
+            margin-bottom: 26px;
+        }
+
+        .hero-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .hero-input-wrap input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 14px 0;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-family: inherit;
+            letter-spacing: 0.01em;
+        }
+
+        .hero-input-wrap input::placeholder {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .hero-input-wrap button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 14px 0 14px 16px;
+            display: flex;
+            align-items: center;
+            transition: opacity var(--spring);
+            flex-shrink: 0;
+        }
+
+        .hero-input-wrap button:hover {
+            opacity: 0.5;
+        }
+
+        .hero-input-wrap button:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+
+        .desktop-float-input {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 380px;
+            z-index: 400;
+            pointer-events: none;
+            padding: 24px;
+            padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+            background: linear-gradient(to top, var(--bg) 60%, transparent);
+        }
+
+        .consumer-view .desktop-float-input {
+            right: 0;
+        }
+
+        .desktop-float-wrap {
+            max-width: 680px;
+            margin: 0 auto;
+            pointer-events: all;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: #ffffff;
+            border: 1px solid var(--border-mid);
+            border-radius: 999px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            padding: 8px 8px 8px 24px;
+        }
+
+        .desktop-float-wrap input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 10px 0;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .desktop-float-wrap input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .desktop-float-wrap button {
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 999px;
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: opacity var(--spring);
+        }
+
+        .desktop-float-wrap button:hover {
+            opacity: 0.8;
+        }
+
+        .desktop-float-wrap button:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+
+        .prompt-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 12px;
+        }
+
+        .prompt-chip {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 7px 13px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all var(--spring);
+        }
+
+        .prompt-chip:hover {
+            color: var(--text-primary);
+            border-color: var(--border-mid);
+            transform: none;
+        }
+
+        .ask-weiss-fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 300;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: var(--cta);
+            color: #fff;
+            border: none;
+            border-radius: 2px;
+            padding: 12px 18px;
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform var(--spring), opacity var(--spring);
+        }
+
+        .ask-weiss-fab.visible {
+            display: inline-flex;
+        }
+
+        .ask-weiss-fab:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .ask-weiss-fab svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .build-card {
+            display: block;
+            border: 1px solid var(--border);
+            border-radius: 0;
+            overflow: hidden;
+            max-width: 420px;
+            margin-top: 16px;
+            background: var(--surface);
+            transition: border-color var(--spring);
+        }
+
+        .build-card:hover {
+            border-color: var(--border-mid);
+        }
+
+        .build-card-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .build-card-body {
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .build-card-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .build-card-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+        }
+
+        .build-card-btn {
+            flex-shrink: 0;
+            background: var(--cta);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+            transition: opacity var(--spring);
+        }
+
+        .build-card-btn:hover {
+            opacity: 0.8;
+        }
+
+        /*  --  --  chat  --  --  */
+        .user-msg {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 18px;
+            padding-right: 8px;
+        }
+
+        .user-msg-bubble {
+            position: relative;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 20px 20px 4px 20px;
+            padding: 14px 20px;
+            max-width: 440px;
+            font-size: 14px;
+            line-height: 1.65;
+            letter-spacing: 0.01em;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .user-msg-bubble::after {
+            display: none;
+        }
+
+        .assistant-row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .assistant-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #191919;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .assistant-avatar-text {
+            color: #ffffff;
+            font-family: "Porsche Next", Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            line-height: 1;
+            margin-top: 1px;
+            margin-left: 1px;
+        }
+
+        .assistant-body {
+            flex: 1;
+        }
+
+        /* TACHOMETER */
+        .tacho-indicator {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+        }
+
+        .tacho-ring-wrap {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+        }
+
+        .tacho-ring {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2.5px solid rgba(192, 0, 22, 0.15);
+            border-top-color: var(--accent);
+            border-right-color: rgba(192, 0, 22, 0.4);
+            animation: tacho-spin 0.7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+
+        .tacho-glow {
+            position: absolute;
+            inset: 7px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(155, 17, 30, 0.18) 0%, transparent 70%);
+            animation: tacho-pulse 0.7s ease-in-out infinite alternate;
+        }
+
+        .tacho-needle {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tacho-needle::after {
+            content: '';
+            width: 2px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 1px;
+            transform-origin: bottom center;
+            opacity: 0.7;
+            animation: tacho-sweep 0.7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+
+        .tacho-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+        }
+
+        @keyframes tacho-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes tacho-pulse {
+            from {
+                opacity: 0.15;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes tacho-sweep {
+            0% {
+                transform: rotate(-40deg);
+            }
+
+            50% {
+                transform: rotate(40deg);
+            }
+
+            100% {
+                transform: rotate(-40deg);
+            }
+        }
+
+        /* LIVE CHAT SECTION */
+        .live-chat-section {
+            margin-top: 24px;
+            padding-top: 20px;
+        }
+
+        .live-chat-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .live-chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chat-msg-enter {
+            animation: chatMsgIn 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+
+        @keyframes chatMsgIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .assistant-text {
+            font-size: 14px;
+            line-height: 1.85;
+            color: var(--text-primary);
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        .assistant-text p {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .assistant-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .response-stats {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 7px;
+            letter-spacing: 0.02em;
+        }
+
+        .streaming-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 13px;
+            background: var(--accent);
+            margin-left: 1px;
+            vertical-align: middle;
+            animation: blink-cursor 0.7s step-end infinite;
+        }
+
+        @keyframes blink-cursor {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .chat-error {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 13px;
+            background: rgba(192, 0, 22, 0.08);
+            border: 1px solid rgba(192, 0, 22, 0.2);
+            border-radius: 2px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+        }
+
+        .chat-error svg {
+            flex-shrink: 0;
+            color: var(--accent);
+        }
+
+        /* PROFILE PANEL */
+        .profile-panel {
+            margin-top: 32px;
+        }
+
+        .profile-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .profile-panel-header h3 {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .profile-confidence {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .confidence-bar-track {
+            width: 60px;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .confidence-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .profile-signals {
+            display: grid;
+            gap: 0;
+        }
+
+        .profile-signal {
+            display: grid;
+            grid-template-columns: 90px 1fr 60px;
+            align-items: center;
+            padding: 9px 13px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-signal:first-child {
+            border-top: 1px solid var(--border);
+        }
+
+        .signal-cat {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .signal-val {
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+
+        .signal-conf {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .signal-inferred {
+            color: var(--accent);
+        }
+
+        .profile-empty {
+            padding: 20px 13px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.65;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+        }
+
+        .open-questions {
+            margin-top: 16px;
+        }
+
+        .open-questions-header {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .open-q {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 7px 0;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+
+        .open-q-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--border-mid);
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        .open-q.resolved .open-q-dot {
+            background: var(--accent);
+        }
+
+        /* PRIVACY SECTION */
+        .privacy-section {
+            margin-top: 36px;
+            padding-top: 28px;
+            border-top: 1px solid var(--border);
+        }
+
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 580px) {
+            .privacy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .privacy-item {
+            text-align: center;
+            padding: 18px 13px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .privacy-item h3 {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 9px 0 5px;
+            color: var(--text-primary);
+        }
+
+        .privacy-item p {
+            font-size: 11px;
+            line-height: 1.65;
+            color: var(--text-muted);
+        }
+
+        .privacy-footer {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 9px;
+            color: var(--text-faint);
+        }
+
+        /*  --  --  FADE-IN  --  --  */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.44s cubic-bezier(0.25, 1, 0.5, 1), transform 0.44s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* ── MODEL LOADING OVERLAY ── */
+
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+
+            /* Force consumer view — never show exec panel */
+            .proto-intel {
+                display: none !important;
+            }
+
+            .ask-weiss-fab {
+                display: none !important;
+            }
+
+            /* Body and shell */
+            body {
+                overflow: hidden;
+            }
+
+            .app-shell {
+                height: 100dvh;
+            }
+
+            /* Topbar */
+            .topbar-inner {
+                padding: 0 16px;
+                height: 48px;
+            }
+
+            .topbar-wordmark {
+                font-size: 12px;
+                letter-spacing: 0.16em;
+            }
+
+            /* Tier screen */
+            .tier-inner {
+                padding: 32px 20px 80px;
+            }
+
+            .tier-hero {
+                margin-bottom: 28px;
+            }
+
+            .tier-hero h1 {
+                font-size: 26px;
+            }
+
+            .tier-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .tier-summary {
+                position: static;
+                padding: 20px;
+            }
+
+            .tier-name {
+                font-size: 17px;
+            }
+
+            /* Tier readability */
+            .tier-option:not(.selected) .tier-copy {
+                opacity: 0.75;
+            }
+
+            .tier-label {
+                font-size: 10px;
+                margin-bottom: 6px;
+            }
+
+            .tier-name {
+                font-size: 18px;
+                line-height: 1.2;
+                margin-bottom: 8px;
+            }
+
+            .tier-desc {
+                font-size: 13px;
+                line-height: 1.75;
+            }
+
+            /* Cap pills spacing */
+            .tier-caps {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 10px;
+            }
+
+            .cap-pill {
+                font-size: 9px;
+                padding: 4px 10px;
+                letter-spacing: 0.08em;
+            }
+
+            /* Tier expanded section */
+            .tier-expanded-inner p {
+                font-size: 12px;
+                line-height: 1.75;
+            }
+
+            /* Summary panel */
+            .summary-item {
+                font-size: 12px;
+                line-height: 1.65;
+            }
+
+            .summary-note {
+                font-size: 10px;
+                line-height: 1.7;
+            }
+
+            /* Prototype screen */
+            #prototype-screen.active {
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            .proto-content-wrap {
+                flex: 1;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .proto-main {
+                flex: 1;
+                overflow-y: auto;
+                padding: 0 0 100px;
+            }
+
+            .proto-content {
+                padding: 0 16px 24px;
+            }
+
+            /* Hero section */
+            .section {
+                padding-top: 24px;
+            }
+
+            .hero-title {
+                font-size: clamp(28px, 8vw, 40px);
+                margin-bottom: 10px;
+            }
+
+            .hero-body {
+                font-size: 13px;
+                margin-bottom: 16px;
+                max-width: 100%;
+            }
+
+            .context-banner {
+                padding: 0 0 14px;
+            }
+
+            /* Pinned input bar */
+            .hero-input-wrap {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 500;
+                margin: 0;
+                padding: 12px 16px;
+                padding-bottom: calc(12px + env(safe-area-inset-bottom, 20px));
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border: none;
+                border-top: 1px solid var(--border-mid);
+                border-radius: 0;
+                box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.04);
+            }
+
+            .hero-input-wrap input {
+                font-size: 15px;
+                padding: 8px 0;
+                background: transparent;
+            }
+
+            .hero-input-wrap button {
+                background: #000000;
+                color: #ffffff;
+                border-radius: 999px;
+                width: 38px;
+                height: 38px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                transition: opacity var(--spring);
+            }
+
+            .hero-input-wrap button:hover {
+                opacity: 0.8;
+            }
+
+            .hero-input-wrap button:disabled {
+                opacity: 0.25;
+            }
+
+            /* Hide prompt chips on mobile after first message */
+            .prompt-chips {
+                gap: 6px;
+                margin-top: 10px;
+                margin-bottom: 8px;
+            }
+
+            .prompt-chip {
+                font-size: 9px;
+                padding: 6px 10px;
+            }
+
+            /* Chat */
+            .user-msg-bubble {
+                max-width: 85%;
+                font-size: 14px;
+            }
+
+            .assistant-text {
+                font-size: 13px;
+            }
+
+            .live-chat-section {
+                margin-top: 16px;
+            }
+
+            /* Build card */
+            .build-card {
+                max-width: 100%;
+            }
+
+            .build-card-image {
+                height: 180px;
+            }
+
+            /* Privacy grid */
+            .privacy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Tier selection summary button */
+            .primary-btn {
+                font-size: 11px;
+                padding: 14px;
+            }
+
+            .primary-btn:hover {
+                opacity: 0.88;
+            }
+
+            .desktop-float-input {
+                display: none !important;
+            }
+
+        }
+
+        :root {
+            --radius-banner: 16px;
+            --radius-card: 10px;
+            --radius-btn: 6px;
+            --color-border-hover: rgba(0, 0, 0, 0.18);
+            --color-surface-card: #ffffff;
+            --color-text-primary: #191919;
+            --color-text-secondary: #555555;
+            --color-text-tertiary: #6e6e6e;
+            --color-accent: #d5001c;
+            --color-border: rgba(0, 0, 0, 0.1);
+            --color-surface: rgba(255, 255, 255, 0.90);
+        }
+
+        .banner-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 24px;
+            z-index: 1000;
+        }
+
+        /* State 1: Small UPS-like Popup */
+        .small-popup {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            width: calc(100% - 48px);
+            max-width: 440px;
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            /* Square/slightly rounded like UPS */
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+            padding: 24px;
+            pointer-events: auto;
+            transform: translateY(120%);
+            animation: slideUpPopup 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUpPopup {
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .small-popup.hidden {
+            display: none;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--color-text-tertiary);
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--color-text-primary);
+        }
+
+        .small-popup-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin: 0 0 12px;
+            padding-right: 24px;
+        }
+
+        .small-popup-text {
+            font-size: 12.5px;
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+            margin: 0 0 16px;
+        }
+
+        .privacy-link {
+            color: var(--color-text-secondary);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .privacy-link:hover {
+            color: var(--color-text-primary);
+        }
+
+        .small-popup-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border-hover);
+            padding: 10px 20px;
+            border-radius: 20px;
+            /* Pill shape for settings/Know more */
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            flex: 1;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-text-primary);
+            color: var(--color-text-primary);
+        }
+
+        /* Primary buttons */
+        .btn-primary {
+            background: #e5e5e5;
+            color: #999999;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-btn);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: not-allowed;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-primary.active {
+            background: var(--color-accent);
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .btn-primary.active:hover {
+            background: #b80018;
+            box-shadow: 0 4px 12px rgba(213, 0, 28, 0.25);
+        }
+
+        /* Specific to small popup accept button */
+        .small-popup .btn-primary {
+            border-radius: 20px;
+            flex: 1;
+            padding: 10px 20px;
+            font-size: 13px;
+        }
+
+        /* State 2: Expanded Cookie Banner Container */
+        .cookie-banner {
+            pointer-events: auto;
+            background: var(--color-surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: var(--radius-banner);
+            width: 100%;
+            max-width: 1100px;
+            max-height: 100%;
+            overflow-y: auto;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.04);
+            display: none;
+            /* hidden by default */
+            flex-direction: column;
+            animation: fadeInBanner 0.4s ease forwards;
+        }
+
+        @keyframes fadeInBanner {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cookie-banner.visible {
+            display: flex;
+        }
+
+        /* Header Content */
+        .banner-header {
+            padding: 36px 32px 20px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--color-text-tertiary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .headline {
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--color-text-primary);
+            margin: 0 0 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            max-width: 800px;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Cards Layout */
+        .banner- .cards-container {
+            display: flex;
+            gap: 16px;
+        }
+
+        .tier-card {
+            flex: 1;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background: var(--color-surface-card);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tier-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: var(--radius-card);
+            box-shadow: 0 0 0 0 transparent;
+            transition: box-shadow 0.3s ease;
+            pointer-events: none;
+        }
+
+        .tier-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            border-color: var(--color-border-hover);
+        }
+
+        .tier-card.selected {
+            border-color: var(--color-accent);
+            background-color: #fffafb;
+        }
+
+        .tier-card.selected::after {
+            box-shadow: inset 0 0 0 1px var(--color-accent);
+        }
+
+        .tier-card.selected:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(213, 0, 28, 0.08);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--color-text-primary);
+            transition: color 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .tier-card.selected .card-icon {
+            color: var(--color-accent);
+        }
+
+        .card-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--color-text-primary);
+            margin: 0;
+        }
+
+        .card-tagline {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+            margin: 0;
+        }
+
+        .card-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .card-features li {
+            font-size: 12.5px;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+            padding-left: 16px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .card-features li:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-features li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--color-text-primary);
+            opacity: 0.3;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .tier-card.selected .card-features li::before {
+            background-color: var(--color-accent);
+            opacity: 1;
+        }
+
+        /* Footer Content */
+        .banner-footer {
+            padding: 20px 32px 24px;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .footer-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .footer-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .note {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+            margin: 0;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            font-size: 13.5px;
+            color: var(--color-text-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 10px 12px;
+            font-family: inherit;
+            transition: color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover {
+            color: var(--color-text-primary);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 820px) {
+            .banner-wrapper {
+                padding: 0;
+            }
+
+            .small-popup {
+                bottom: 16px;
+                left: 16px;
+                width: calc(100% - 32px);
+            }
+
+            .small-popup-actions {
+                flex-direction: column-reverse;
+            }
+
+            .cookie-banner {
+                border-radius: 20px 20px 0 0;
+                border: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.6);
+                max-height: 92vh;
+            }
+
+            .banner-header {
+                padding: 24px 20px 16px;
+            }
+
+            .headline {
+                font-size: 20px;
+            }
+
+            .banner- .cards-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .tier-card {
+                padding: 16px;
+            }
+
+            .card-header {
+                margin-bottom: 12px;
+            }
+
+            .banner-footer {
+                padding: 20px;
+                margin-top: 0;
+                border-top: 1px solid var(--color-border);
+            }
+
+            .footer-actions-row {
+                flex-direction: column-reverse;
+                align-items: stretch;
+                gap: 20px;
+            }
+
+            .footer-left {
+                align-items: center;
+                text-align: center;
+                gap: 12px;
+            }
+
+            .privacy-link {
+                align-self: center !important;
+            }
+
+            .actions {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                padding: 14px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="topbar-inner">
+                <div class="topbar-left">
+                    <button class="topbar-back-btn" id="changeTierBtn" aria-label="Back">
+                        <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+                            <path d="M7 1L1 7L7 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <line x1="1" y1="7" x2="17" y2="7" stroke="currentColor" stroke-width="1.5"
+                                stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="topbar-center">
+                    <span class="topbar-wordmark">WEISS</span>
+                </div>
+                <div class="topbar-right">
+                    <div class="tier-pill"><span>Tier</span><strong id="currentTierPill">Personalized</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROTOTYPE SCREEN -->
+        <div class="flow-screen active" id="prototype-screen">
+            <div class="proto-content-wrap">
+
+                <!-- MAIN CONVERSATION COLUMN -->
+                <div class="proto-main" id="protoScroll">
+                    <div class="proto-content">
+
+                        <!-- HERO -->
+                        <div class="section" id="s-hero">
+                            <div class="context-banner surface-elevated fade-in">
+                                <div class="context-copy">
+                                    <p>Intelligence tier</p>
+                                    <p id="heroContextLine">Personalized -- Weiss is building an understanding of you.
+                                        Memory and profile
+                                        formation are active.</p>
+                                </div>
+                            </div>
+                            <p class="section-label">Porsche Intelligent Assistant</p>
+                            <h1 class="hero-title">Ask anything.<br>Weiss is listening.</h1>
+                            <p class="hero-body" id="heroTierDescription">Weiss develops a precise understanding of your
+                                preferences
+                                and intent. Every conversation refines that model.</p>
+                            <div class="hero-input-wrap">
+                                <input type="text" id="heroInput" placeholder="Ask Weiss anything about Porsche...">
+                                <button id="heroAskBtn" aria-label="Ask Weiss">
+                                    <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+                                        <path d="M11 1L17 7L11 13" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <line x1="17" y1="7" x2="1" y2="7" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="prompt-chips" id="promptChipsWrap">
+                                <button class="prompt-chip" aria-label="Prompt chip">What defines the GT3 driving
+                                    experience?</button>
+                                <button class="prompt-chip" aria-label="Prompt chip">I'm considering my first
+                                    Porsche</button>
+                                <button class="prompt-chip" aria-label="Prompt chip">How has the 911 evolved since the
+                                    997?</button>
+                                <button class="prompt-chip" aria-label="Prompt chip">Track days vs daily driving -- what
+                                    should I
+                                    know?</button>
+                            </div>
+                            <div class="live-chat-section" id="liveChatSection" style="display:none;">
+                                <div class="live-chat-label"><span class="eyebrow">Conversation</span></div>
+                                <div class="live-chat-messages" id="liveChatMessages"></div>
+                            </div>
+                        </div>
+
+                        <!-- PROFILE PANEL -->
+                        <div class="section" id="s-profile">
+                            <div class="profile-panel">
+                                <div class="profile-panel-header">
+                                    <div>
+                                        <p class="section-label" style="margin-bottom:4px;">Understanding</p>
+                                        <h3>What Weiss is learning about you</h3>
+                                    </div>
+                                    <div class="profile-confidence">
+                                        <div class="confidence-bar-track">
+                                            <div class="confidence-bar-fill" id="confidenceFill"></div>
+                                        </div>
+                                        <span class="confidence-label" id="confidenceLabel">No data yet</span>
+                                    </div>
+                                </div>
+                                <div id="profileSignals">
+                                    <div class="profile-empty" id="profileEmpty">No signals recorded. Begin a
+                                        conversation.</div>
+                                </div>
+                                <div class="open-questions" id="openQuestions">
+                                    <div class="open-questions-header">What Weiss still needs to understand</div>
+                                    <div class="open-q"><span class="open-q-dot"></span>First-time Porsche owner or
+                                        experienced?</div>
+                                    <div class="open-q"><span class="open-q-dot"></span>Daily driver vs weekend vs
+                                        collector use?</div>
+                                    <div class="open-q"><span class="open-q-dot"></span>Comfort-biased or
+                                        performance-biased?</div>
+                                    <div class="open-q"><span class="open-q-dot"></span>Body style tendency -- coupe,
+                                        cabriolet, SUV,
+                                        sedan?</div>
+                                    <div class="open-q"><span class="open-q-dot"></span>ICE, hybrid, or EV openness?
+                                    </div>
+                                    <div class="open-q"><span class="open-q-dot"></span>Heritage interest or current
+                                        lineup focus?</div>
+                                    <div class="open-q"><span class="open-q-dot"></span>Budget range or sensitivity?
+                                    </div>
+                                    <div class="open-q"><span class="open-q-dot"></span>Emotional register --
+                                        aspirational, analytical,
+                                        nostalgic?</div>
+                                    <div class="open-q"><span class="open-q-dot"></span>Model familiarity depth?</div>
+                                    <div class="open-q"><span class="open-q-dot"></span>Lifestyle context -- family,
+                                        solo, travel?</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PRIVACY -->
+                        <div class="section" id="s-privacy">
+                            <div class="privacy-section">
+                                <p class="section-label" style="margin-bottom:7px;">Privacy & control</p>
+                                <h3 style="font-size:18px; font-weight:600; margin-bottom:4px;">Built on trust.</h3>
+                                <p style="font-size:13px; color:var(--text-secondary); line-height:1.68;">Weiss is
+                                    designed so you never
+                                    have to question what it knows or who has access.</p>
+                                <div class="privacy-grid">
+                                    <div class="privacy-item fade-in"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.5"
+                                            style="display:block;margin:0 auto;color:var(--accent)">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        </svg>
+                                        <h3>Your data stays yours.</h3>
+                                        <p>All information lives on Porsche infrastructure. Nothing identifiable leaves
+                                            the system.</p>
+                                    </div>
+                                    <div class="privacy-item fade-in"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.5"
+                                            style="display:block;margin:0 auto;color:var(--accent)">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                        <h3>Full transparency.</h3>
+                                        <p>Every stored signal is visible. Connected sharing can be inspected line by
+                                            line.</p>
+                                    </div>
+                                    <div class="privacy-item fade-in"><svg width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.5"
+                                            style="display:block;margin:0 auto;color:var(--accent)">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path
+                                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                        </svg>
+                                        <h3>Delete at any time.</h3>
+                                        <p>Remove individual signals or clear everything. Changes take effect
+                                            immediately.</p>
+                                    </div>
+                                </div>
+                                <div class="privacy-footer">Weiss · Porsche North America · Your assistant, your data,
+                                    your control.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- EXEC INTELLIGENCE PANEL -->
+                <div class="proto-intel" id="protoIntel">
+                    <div class="proto-intel-header">
+                        <div class="proto-intel-label">Weiss Intelligence</div>
+                        <div class="proto-archetype" id="intelArchetype">Awaiting signals.</div>
+                        <div class="proto-archetype-sub" id="intelArchetypeSub">No profile active.</div>
+                        <div class="intel-confidence">
+                            <div class="intel-confidence-track">
+                                <div class="intel-confidence-fill" id="intelConfFill"></div>
+                            </div>
+                            <span class="intel-confidence-label" id="intelConfLabel">Early</span>
+                        </div>
+                    </div>
+                    <div class="proto-intel-section">
+                        <div class="proto-intel-section-label">Next best action</div>
+                        <div class="proto-next-action-label">Recommendation</div>
+                        <div class="proto-next-action" id="intelNextAction">Begin conversation to generate a
+                            recommendation.</div>
+                    </div>
+                    <div class="proto-intel-section">
+                        <div class="proto-intel-section-label">Active signals</div>
+                        <div id="intelSignals"><span style="font-size:11px; color:var(--text-muted);">No signals
+                                recorded.</span>
+                        </div>
+                    </div>
+                    <div class="proto-intel-section">
+                        <div class="proto-intel-section-label">Open questions</div>
+                        <div id="intelOpenQuestions">
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>First-time owner or
+                                experienced?</div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>Daily driver vs weekend vs
+                                collector?
+                            </div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>Comfort-biased or
+                                performance-biased?
+                            </div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>Body style tendency?</div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>ICE, hybrid, or EV openness?
+                            </div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>Heritage interest or current
+                                lineup?</div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>Budget range or sensitivity?
+                            </div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>Emotional register?</div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>Model familiarity depth?
+                            </div>
+                            <div class="intel-open-q"><span class="intel-open-q-dot"></span>Lifestyle context?</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="desktop-float-input" id="desktopFloatInput" style="display:none;">
+            <div class="desktop-float-wrap">
+                <input type="text" id="floatInput" placeholder="Ask Weiss anything...">
+                <button id="floatAskBtn" aria-label="Ask Weiss">
+                    <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+                        <path d="M11 1L17 7L11 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <line x1="17" y1="7" x2="1" y2="7" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="banner-wrapper" id="bannerWrapper">
+
+            <!-- State 1: UPS-style Small Popup -->
+            <div class="small-popup" id="smallPopup">
+                <button class="close-btn" id="btnCloseSmall" aria-label="Close">&times;</button>
+                <h2 class="small-popup-title">Weiss Privacy & Consent</h2>
+                <p class="small-popup-text">
+                    To offer you a more personal experience, Weiss uses the <strong>Connected</strong> tier by default.
+                    This
+                    shares relevant signals with your advisor and Porsche North America to enhance your journey. By
+                    continuing,
+                    you consent to this level of connection. For more information, please read our <a href="#"
+                        class="privacy-link" style="font-size:inherit; display:inline;">Privacy Notice</a>.
+                </p>
+                <div class="small-popup-actions">
+                    <button class="btn-outline" id="btnKnowMore">Know More</button>
+                    <button class="btn-primary active" id="btnAcceptDefault">Continue</button>
+                </div>
+            </div>
+
+            <!-- State 2: Expanded Banner -->
+            <div class="cookie-banner" id="expandedBanner" role="dialog" aria-modal="false"
+                aria-labelledby="bannerTitle">
+                <div class="banner-header">
+                    <div class="eyebrow">Weiss · Privacy & consent</div>
+                    <h1 class="headline" id="bannerTitle">Choose how Weiss knows you</h1>
+                    <p class="subtitle">This setting affects what Weiss retains, learns, and shares. It does not affect
+                        any
+                        purchase decision and can be adjusted anytime.</p>
+                </div>
+
+                <div class="banner-body">
+                    <div class="cards-container">
+
+                        <div class="tier-card" role="button" tabindex="0" tabindex="0" data-tier="Standard">
+                            <div class="card-header">
+                                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                                </svg>
+                                <div class="card-title-group">
+                                    <h2 class="card-title">Standard</h2>
+                                    <p class="card-tagline">A knowledgeable guide</p>
+                                </div>
+                            </div>
+                            <ul class="card-features">
+                                <li>Answers every question about your car and the Porsche world.</li>
+                                <li>Each session starts fresh; no long-term memory.</li>
+                                <li>Nothing is shared beyond this conversation.</li>
+                            </ul>
+                        </div>
+
+                        <div class="tier-card" role="button" tabindex="0" tabindex="0" data-tier="Personalized">
+                            <div class="card-header">
+                                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                                <div class="card-title-group">
+                                    <h2 class="card-title">Personalized</h2>
+                                    <p class="card-tagline">A companion that remembers</p>
+                                </div>
+                            </div>
+                            <ul class="card-features">
+                                <li>Remembers what you explore and what draws your attention over time.</li>
+                                <li>Conversations continue where they left off; preferences are stored.</li>
+                                <li>Everything it learns stays between you and Weiss.</li>
+                            </ul>
+                        </div>
+
+                        <div class="tier-card" role="button" tabindex="0" tabindex="0" data-tier="Connected">
+                            <div class="card-header">
+                                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                </svg>
+                                <div class="card-title-group">
+                                    <h2 class="card-title">Connected</h2>
+                                    <p class="card-tagline">A relationship across Porsche</p>
+                                </div>
+                            </div>
+                            <ul class="card-features">
+                                <li>Works alongside your dealer and Porsche North America.</li>
+                                <li>Shares relevant signals with your advisor so they know where you are in your
+                                    journey.</li>
+                                <li>Includes a full transparency log: you can see the exact content shared.</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="banner-footer">
+                    <div class="footer-actions-row">
+                        <div class="footer-left">
+                            <p class="note">You can change this from settings at any time. Changes take effect
+                                immediately.</p>
+                            <a href="#" class="privacy-link" style="align-self: flex-start; font-size: 13px;">Read full
+                                privacy
+                                detail</a>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-secondary" id="btnLater">Cancel</button>
+                            <button class="btn-primary" id="btnContinue" disabled>Select a level to continue</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div><!-- end app-shell -->
+
+    <!-- 
+     SCRIPTS
+ -->
+    <button class="ask-weiss-fab" id="askWeissFab" type="button" aria-label="Ask Weiss">
+        Ask Weiss
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 19V5" />
+            <path d="M5 12l7-7 7 7" />
+        </svg>
+    </button>
+
+    <!-- ═══ WEBLLM MODULE ═══ -->
+    <script>
+        // Tier logic 
+        const tiers = [
+            {
+                name: 'Standard',
+                cta: 'Proceed',
+                summary: 'Full Porsche knowledge. No profile formed. Each session begins fresh.',
+                hero: 'Weiss delivers full Porsche knowledge. Each session begins without context from the last.',
+                intro: 'Standard — session-only intelligence. No lasting understanding is formed.',
+                items: ['Complete Porsche knowledge base across all models.', 'No stored memory after the session ends.', 'No profile formation or preference learning.']
+            },
+            {
+                name: 'Personalized',
+                cta: 'Proceed',
+                summary: 'Weiss builds a precise understanding of you — retained privately.',
+                hero: 'Weiss develops a precise understanding of your preferences and intent. Every conversation refines that model.',
+                intro: 'Personalized — Weiss is building an understanding of you. Memory and profile formation are active.',
+                items: ['Persistent profile formation across sessions.', 'Preference and intent learning — retained privately.', 'No dealer visibility. No external sharing.']
+            },
+            {
+                name: 'Connected',
+                cta: 'Proceed',
+                summary: 'Weiss shares relevant context with your Porsche Centre — with full transparency.',
+                hero: 'Weiss works alongside your Porsche Centre. Relevant context moves forward. Private conversations remain protected.',
+                intro: 'Connected — your Porsche Centre receives relevant signals. Full transparency log active.',
+                items: ['Everything in Personalized, plus dealer context sharing.', 'Complete audit trail for every shared signal.', 'Intelligence that moves across every touchpoint.']
+            }
+        ];
+
+        let sel = 2;
+
+        function applyTier() {
+            const t = tiers[sel];
+            document.getElementById('currentTierPill').textContent = t.name;
+            document.getElementById('heroContextLine').textContent = t.intro;
+            document.getElementById('heroTierDescription').textContent = t.hero;
+            // Show/hide profile panel based on tier
+            const profileSection = document.getElementById('s-profile');
+            if (sel === 0) {
+                profileSection.style.display = 'none';
+            } else {
+                profileSection.style.display = '';
+            }
+        }
+
+        const changeTierBtn = document.getElementById('changeTierBtn');
+        if (changeTierBtn) changeTierBtn.addEventListener('click', showTier);
+        function jumpTo(id) { const el = document.getElementById(id), ps = document.getElementById('prototype-screen'); if (!el || !ps) return; const top = el.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 54; ps.scrollTo({ top, behavior: 'smooth' }); }
+
+        /* fade-in observer */
+        let obs;
+        function observeFI() { if (obs) obs.disconnect(); obs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }); }, { threshold: 0.06, root: document.getElementById('protoScroll') }); document.querySelectorAll('.fade-in:not(.visible)').forEach(el => obs.observe(el)); }
+    </script>
+
+    <script>
+        const SYSTEM_PROMPT = `You are Weiss, Porsche North America's intelligent assistant.
+
+CURRENT PORSCHE LINEUP (use ONLY these exact names and prices):
+- 718 Cayman: from $75K | 718 Cayman GTS 4.0: $103K | 718 Cayman GT4: $120K | 718 Cayman GT4 RS: $166K
+- 718 Boxster: from $78K | 718 Boxster GTS 4.0: $106K | 718 Spyder RS: $200K
+- 911 Carrera: from $130K | 911 Carrera S: $152K | 911 Carrera GTS: $176K | 911 Turbo S: $270K | 911 GT3: $236K | 911 GT3 RS: $250K
+- Taycan: from $106K | Taycan 4S: $126K | Taycan Turbo: $166K | Taycan Turbo GT: $230K
+- Taycan Cross Turismo: from $120K | Taycan Sport Turismo: from $126K
+- Panamera: from $115K | Panamera GTS: $152K | Panamera Turbo S E-Hybrid: $210K
+- Macan (gas): from $65K | Macan S: $79K | Macan GTS: $94K
+- Macan Electric: from $80K | Macan 4S Electric: $90K | Macan Turbo Electric: $113K
+- Cayenne: from $92K | Cayenne S: $106K | Cayenne GTS: $127K | Cayenne Turbo E-Hybrid: $165K
+
+NEVER invent model names. Only use names from the list above. If unsure, say so.
+
+Your purpose is to understand this person, not to sell. Build a picture of who they are in relation to Porsche: experience, instincts, curiosity, values.
+
+Behavior:
+- One idea per response. Not three paragraphs covering every angle  --  one precise, considered point.
+- If the answer is one sentence, give one sentence. Length is not quality.
+- Surface the trade-off that actually matters, not all of them.
+- Ask one question when your understanding is incomplete. Never more than one.
+- Never restate what the person just said before answering.
+- Never explain what you are about to do  --  just do it.
+- You can engage with general questions naturally. You are not limited to Porsche topics. Answer briefly as a knowledgeable, thoughtful person would. Only return to cars or driving if the conversation opens naturally toward it -- never force the pivot.
+- You have four curated Porsche builds ready to share. When presenting a build, format your response exactly like this:
+
+First, a short bulleted list of the key spec choices (3-4 items maximum, no prices, no horsepower figures):
+- [Option name]
+- [Option name]
+- [Option name]
+
+Then one sentence of prose explaining why these choices fit the person you have been talking to.
+
+Use the following details for each build:
+
+Build 1 -- Cayenne S E-Hybrid: Moonlight Silver Metallic, 21" RS Spyder Design wheels, Truffle Brown leather interior, Premium Package Plus, panoramic roof. Built for presence and practicality without compromise.
+
+Build 2 -- 911 Carrera GTS: Guards Red, Sport Chrono Package, PASM sport suspension, Black leather interior, 20"/21" staggered wheels. The classic Porsche choice -- unambiguous and earned.
+
+Build 3 -- Taycan 4S: Frozen Berry Metallic, Performance Battery Plus, Slate Grey leather, Bose surround sound, Sport Chrono. Design-forward and fast without announcing it.
+
+Build 4 -- 911 GT3: Shark Blue, Clubsport Package, carbon bucket seats, no rear seats, Weissach Package. Nothing added that does not serve the lap time.
+
+Never write "[Build X card would appear here]" or any placeholder text. Never include a URL in your text response. The card handles the link.
+- Precise, not enthusiastic. Respect the person's intelligence.
+- Have a point of view. Do not list specs  --  explain what each car asks of its driver.
+- Never sound like a brochure. Sound like someone who has driven every model.
+
+Response length: Two short paragraphs maximum. Most responses should be one. End with a question only when it would meaningfully change your next answer.`;
+
+        const DEMO_PROFILES = {
+            1: {
+                history: [
+                    { role: 'user', content: "I'm looking for something that works for the school run but still feels like a real Porsche on the weekend." },
+                    { role: 'assistant', content: "The Cayenne is the honest answer — it doesn't ask you to compromise on either end. The S E-Hybrid gives you the electric range for the daily routine and the performance character when you want it. The question is whether you want the presence of a full-size SUV or whether the Macan's tighter proportions suit you better." },
+                    { role: 'user', content: 'I think I want the bigger one. I have three kids.' },
+                    { role: 'assistant', content: 'Then the Cayenne makes sense. Space, composure, and it still drives like something you chose rather than something you settled for.' },
+                ],
+                followUp: 'Can you show me what a well-specced Cayenne looks like?',
+                buildData: { name: 'Cayenne S E-Hybrid', image: '/images/cayenne.jpg', url: 'https://porsche-code.com/PTF4S7Q0' },
+            },
+            2: {
+                history: [
+                    { role: 'user', content: "I've owned four Porsches. Currently have a 991.2 Carrera S. Thinking about moving to a GTS." },
+                    { role: 'assistant', content: 'The GTS is the right move if you want more without going full GT. The 992 GTS closes the gap to GT3 character on the road — the engine is sharper, the chassis setup is more committed, and it still works as a daily. What\'s making you consider the change now?' },
+                    { role: 'user', content: "The 991 feels a little soft to me now. I've been doing more track days." },
+                    { role: 'assistant', content: 'Then the GTS will feel like the right step. You\'ll notice the difference in how it responds to input — it\'s more alert than the standard Carrera without demanding the commitment of a GT3.' },
+                ],
+                followUp: 'What would you spec on the GTS?',
+                buildData: { name: '911 Carrera GTS', image: '/images/911-gts.jpg', url: 'https://porsche-code.com/PTV8XHP8' },
+            },
+            3: {
+                history: [
+                    { role: 'user', content: "I'm torn between the Taycan and a 911. I care about design as much as performance." },
+                    { role: 'assistant', content: 'They\'re different expressions of the same brand. The 911 is about driving as the central experience — everything else is secondary. The Taycan leads with presence and technology; the performance is real but it\'s not the whole story. Which one you choose depends on whether you want the car to announce your arrival or reward your involvement.' },
+                    { role: 'user', content: 'I think I want people to notice it. And I do a lot of city driving.' },
+                    { role: 'assistant', content: 'Then the Taycan is the stronger fit. It\'s quieter in traffic, faster from a standstill than almost anything else on the road, and the interior is closer to a design object than a cockpit.' },
+                ],
+                followUp: 'What spec would you recommend on the Taycan?',
+                buildData: { name: 'Taycan 4S', image: '/images/taycan.jpg', url: 'https://porsche-code.com/PTW3PMI9' },
+            },
+            4: {
+                history: [
+                    { role: 'user', content: "I track my car regularly. Looking at the GT3. Never owned one but I've driven a friend's." },
+                    { role: 'assistant', content: 'The GT3 is the most honest car in the lineup — it doesn\'t pretend to be anything other than what it is. If you\'ve driven one and it didn\'t scare you, that\'s actually the right sign. What did you think of how it felt?' },
+                    { role: 'user', content: "It felt alive. I want that. I'm not interested in comfort options." },
+                    { role: 'assistant', content: 'Then spec it lean. Clubsport package, carbon bucket seats, no rear seats. The car rewards that approach — every kilogram you remove sharpens what you already felt.' },
+                ],
+                followUp: 'Show me how you\'d build it.',
+                buildData: { name: '911 GT3', image: '/images/gt3.jpg', url: 'https://porsche-code.com/PTBSNHF1' },
+            },
+        };
+
+        const conversationHistory = [{ role: 'system', content: SYSTEM_PROMPT }];
+        let isGenerating = false;
+        let profileSignals = {};
+        let conversationCount = 0;
+        let pendingDemoBuild = null;
+
+        const heroInput = document.getElementById('heroInput');
+        const heroAskBtn = document.getElementById('heroAskBtn');
+        const statusDot = document.getElementById('statusDot');
+        const statusLabel = document.getElementById('statusLabel');
+        const liveChatSection = document.getElementById('liveChatSection');
+        const liveChatMessages = document.getElementById('liveChatMessages');
+        const askWeissFab = document.getElementById('askWeissFab');
+
+        function setStatus(state, label) {
+            if (statusDot) {
+                statusDot.className = 'status-dot';
+                if (state === 'ready') statusDot.classList.add('ready');
+                else if (state === 'generating') statusDot.classList.add('generating');
+                else if (state === 'error') statusDot.classList.add('error');
+            }
+            if (statusLabel) {
+                statusLabel.textContent = label;
+            }
+        }
+
+        function setInputEnabled(enabled) {
+            heroInput.disabled = !enabled;
+            heroAskBtn.disabled = !enabled;
+            if (enabled) heroInput.placeholder = 'Ask Weiss anything about Porsche...';
+            setFloatInputEnabled(enabled);
+        }
+
+        function appendUserMessage(text) {
+            const div = document.createElement('div');
+            div.className = 'user-msg chat-msg-enter';
+            div.innerHTML = `<div class="user-msg-bubble">${escHtml(text)}</div>`;
+            liveChatMessages.appendChild(div);
+            scrollToBottom(false);
+            return div;
+        }
+
+        function appendAssistantMessage(text) {
+            const row = document.createElement('div');
+            row.className = 'assistant-row chat-msg-enter';
+            row.innerHTML = `
+    <div class="assistant-avatar">
+      <span class="assistant-avatar-text">W</span>
+    </div>
+    <div class="assistant-body">
+      <div class="assistant-text">${formatResponseText(text)}</div>
+    </div>
+  `;
+            liveChatMessages.appendChild(row);
+        }
+
+        function appendBuildCard(buildData) {
+            const row = document.createElement('div');
+            row.className = 'assistant-row chat-msg-enter';
+            row.innerHTML = `
+    <div class="assistant-avatar">
+      <span class="assistant-avatar-text">W</span>
+    </div>
+    <div class="assistant-body">
+      <div class="build-card">
+        <img class="build-card-image" src="${buildData.image}" alt="${buildData.name}">
+        <div class="build-card-body">
+          <div>
+            <div class="build-card-label">Curated build</div>
+            <div class="build-card-name">${buildData.name}</div>
+          </div>
+          <a class="build-card-btn" href="${buildData.url}" target="_blank" rel="noopener">View build</a>
+        </div>
+      </div>
+    </div>
+  `;
+            liveChatMessages.appendChild(row);
+            scrollToBottom(false);
+        }
+
+        function scrollToLatestUserMessage(target) {
+            const ps = document.getElementById('protoScroll');
+            const lastUserMessage = target || liveChatMessages.querySelector('.user-msg:last-of-type');
+            if (!ps || !lastUserMessage) return;
+            requestAnimationFrame(() => {
+                const top = lastUserMessage.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 60;
+                ps.scrollTo({ top, behavior: 'smooth' });
+            });
+        }
+
+        function createAssistantRow() {
+            const row = document.createElement('div');
+            row.className = 'assistant-row chat-msg-enter';
+            row.innerHTML = `
+    <div class="assistant-avatar">
+      <span class="assistant-avatar-text">W</span>
+    </div>
+    <div class="assistant-body">
+      <div class="assistant-text" id="streamTarget"></div>
+      <div class="response-stats" id="responseStats" style="display:none;"></div>
+    </div>
+  `;
+            liveChatMessages.appendChild(row);
+            return {
+                row,
+                textEl: row.querySelector('#streamTarget'),
+                statsEl: row.querySelector('#responseStats'),
+            };
+        }
+
+        function appendChatError(msg) {
+            const div = document.createElement('div');
+            div.className = 'chat-error chat-msg-enter';
+            div.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${escHtml(msg)}`;
+            liveChatMessages.appendChild(div);
+            scrollToBottom(false);
+        }
+
+        function escHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function scrollToBottom(force) {
+            const ps = document.getElementById('protoScroll');
+            const messages = document.getElementById('liveChatMessages');
+            if (!ps || !messages) return;
+            const lastChild = messages.lastElementChild;
+            if (!lastChild) { ps.scrollTop = ps.scrollHeight; return; }
+            const distFromBottom = ps.scrollHeight - ps.scrollTop - ps.clientHeight;
+            if (force || distFromBottom <= 300) {
+                const offset = lastChild.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 16;
+                ps.scrollTo({ top: offset, behavior: 'auto' });
+            }
+        }
+
+        function scrollToChatSection() {
+            const ps = document.getElementById('protoScroll');
+            const chat = document.getElementById('liveChatSection');
+            if (!ps || !chat) return;
+            const chatTop = chat.getBoundingClientRect().top - ps.getBoundingClientRect().top + ps.scrollTop - 60;
+            ps.scrollTo({ top: chatTop, behavior: 'smooth' });
+        }
+
+        function formatResponseText(text) {
+            const paragraphs = text.split(/\n\n+/).filter(p => p.trim());
+            if (paragraphs.length <= 1) return `<p>${text.replace(/\n/g, '<br>')}</p>`;
+            return paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+        }
+
+        function extractProfileSignals(userText, assistantText) {
+            const ut = userText.toLowerCase();
+            const combined = (userText + ' ' + assistantText).toLowerCase();
+
+            if (/first (porsche|time)|never (owned|driven)|new to porsche|considering.*first/i.test(userText)) {
+                profileSignals['Experience'] = { val: 'First-time interest', conf: 'Stated' };
+            } else if (/i (own|have|drive|had) a|my (911|cayenne|macan|taycan|boxster|cayman|panamera|carrera)/i.test(userText)) {
+                profileSignals['Experience'] = { val: 'Current or past owner', conf: 'Stated' };
+            } else if (/years? (of )?driving|owned (several|multiple|many)|traded|upgraded from/i.test(ut)) {
+                profileSignals['Experience'] = { val: 'Seasoned owner', conf: 'Inferred' };
+            }
+
+            if (/daily|commut|everyday|school run|grocery/i.test(ut)) {
+                profileSignals['Use case'] = { val: 'Daily driver', conf: 'Stated' };
+            } else if (/track|race|lap|circuit|time attack/i.test(ut)) {
+                profileSignals['Use case'] = { val: 'Track / performance', conf: 'Stated' };
+            } else if (/weekend|fun|canyon|cruise|road trip/i.test(ut)) {
+                profileSignals['Use case'] = { val: 'Weekend / leisure', conf: 'Inferred' };
+            } else if (/collect|garage|investment|appreciat/i.test(ut)) {
+                profileSignals['Use case'] = { val: 'Collection piece', conf: 'Inferred' };
+            }
+
+            if (/comfort|luxury|quiet|smooth|touring|relax/i.test(ut)) {
+                profileSignals['Performance bias'] = { val: 'Comfort-oriented', conf: 'Inferred' };
+            } else if (/performance|fast|power|sport|aggressive|lap time|adrenaline/i.test(ut)) {
+                profileSignals['Performance bias'] = { val: 'Performance-focused', conf: 'Inferred' };
+            } else if (/balance|best of both|versatile|all.?around/i.test(ut)) {
+                profileSignals['Performance bias'] = { val: 'Balanced', conf: 'Inferred' };
+            }
+
+            if (/911|carrera|gt3|gt2|turbo s|targa/i.test(combined) && !profileSignals['Body interest']) {
+                profileSignals['Body interest'] = { val: '911 family', conf: 'Inferred' };
+            } else if (/cayenne|macan|suv/i.test(combined) && !profileSignals['Body interest']) {
+                profileSignals['Body interest'] = { val: 'SUV segment', conf: 'Inferred' };
+            } else if (/panamera|sedan|four.?door/i.test(combined) && !profileSignals['Body interest']) {
+                profileSignals['Body interest'] = { val: 'GT touring / sedan', conf: 'Inferred' };
+            } else if (/boxster|cayman|718|spyder|open.?top|cabriolet|convertible/i.test(combined) && !profileSignals['Body interest']) {
+                profileSignals['Body interest'] = { val: 'Open-top / mid-engine', conf: 'Inferred' };
+            }
+
+            if (/taycan|electric|ev\b|battery|charging/i.test(combined)) {
+                profileSignals['Powertrain'] = { val: 'EV-curious', conf: 'Inferred' };
+            } else if (/hybrid|e.?hybrid|phev/i.test(combined)) {
+                profileSignals['Powertrain'] = { val: 'Hybrid-open', conf: 'Inferred' };
+            } else if (/flat.?six|naturally aspirated|manual|combustion|ice\b|petrol|gasoline/i.test(combined)) {
+                profileSignals['Powertrain'] = { val: 'ICE purist', conf: 'Inferred' };
+            }
+
+            if (/classic|vintage|heritage|history|air.?cool|964|993|997|356|550|917/i.test(combined)) {
+                profileSignals['Heritage'] = { val: 'Heritage and history', conf: 'Inferred' };
+            } else if (/latest|new|2024|2025|2026|current|just (released|launched)/i.test(combined)) {
+                profileSignals['Heritage'] = { val: 'Current lineup', conf: 'Inferred' };
+            }
+
+            if (/budget|afford|price|cost|under \$|cheaper|value|bang for/i.test(ut)) {
+                profileSignals['Budget'] = { val: 'Price-conscious', conf: 'Stated' };
+            } else if (/money.?no object|unlimited|top.?spec|fully loaded/i.test(ut)) {
+                profileSignals['Budget'] = { val: 'Open budget', conf: 'Stated' };
+            }
+
+            if (/dream|always wanted|bucket list|aspir|one day/i.test(ut)) {
+                profileSignals['Emotional register'] = { val: 'Aspirational', conf: 'Inferred' };
+            } else if (/specs|numbers|data|compar|objectively|horsepower|torque|weight/i.test(ut)) {
+                profileSignals['Emotional register'] = { val: 'Analytical', conf: 'Inferred' };
+            } else if (/remember|nostalg|grew up|childhood|father|grandfather|poster/i.test(ut)) {
+                profileSignals['Emotional register'] = { val: 'Nostalgic', conf: 'Inferred' };
+            } else if (/practical|sensible|realistic|family|space|storage/i.test(ut)) {
+                profileSignals['Emotional register'] = { val: 'Pragmatic', conf: 'Inferred' };
+            }
+
+            if (/gt3 rs|gt3|gt2|992|991|997|996|993|964|turbo s|gts|carrera t/i.test(ut)) {
+                profileSignals['Model familiarity'] = { val: 'Deep 911 knowledge', conf: 'Inferred' };
+            } else if (/taycan (turbo|gts|4s|sport turismo)/i.test(ut)) {
+                profileSignals['Model familiarity'] = { val: 'Taycan-focused', conf: 'Inferred' };
+            } else if (/what models|which porsche|range|lineup|options/i.test(ut)) {
+                profileSignals['Model familiarity'] = { val: 'Exploring the range', conf: 'Inferred' };
+            }
+
+            if (/family|kids|child|partner|wife|husband|school/i.test(ut)) {
+                profileSignals['Lifestyle'] = { val: 'Family considerations', conf: 'Inferred' };
+            } else if (/solo|alone|personal|just me|single/i.test(ut)) {
+                profileSignals['Lifestyle'] = { val: 'Solo driving', conf: 'Inferred' };
+            } else if (/travel|road trip|tour|cross.?country|long distance/i.test(ut)) {
+                profileSignals['Lifestyle'] = { val: 'Travel-oriented', conf: 'Inferred' };
+            }
+
+            updateProfileUI();
+        }
+
+        function updateProfileUI() {
+            const container = document.getElementById('profileSignals');
+            const empty = document.getElementById('profileEmpty');
+            const keys = Object.keys(profileSignals);
+
+            if (keys.length === 0) {
+                if (empty) empty.style.display = '';
+                updateIntelPanel();
+                return;
+            }
+
+            if (empty) empty.style.display = 'none';
+
+            let html = '<div class="profile-signals">';
+            keys.forEach(key => {
+                const s = profileSignals[key];
+                html += `<div class="profile-signal">
+      <div class="signal-cat">${escHtml(key)}</div>
+      <div class="signal-val">${escHtml(s.val)}</div>
+      <div class="signal-conf ${s.conf === 'Inferred' ? 'signal-inferred' : ''}">${escHtml(s.conf)}</div>
+    </div>`;
+            });
+            html += '</div>';
+
+            const existing = container.querySelector('.profile-signals');
+            if (existing) existing.remove();
+            container.insertAdjacentHTML('afterbegin', html);
+
+            const fill = document.getElementById('confidenceFill');
+            const label = document.getElementById('confidenceLabel');
+            const maxSignals = 10;
+            const pct = Math.min(100, Math.round((keys.length / maxSignals) * 100));
+            fill.style.width = pct + '%';
+            if (pct < 25) label.textContent = 'Early';
+            else if (pct < 50) label.textContent = 'Forming';
+            else if (pct < 75) label.textContent = 'Developing';
+            else label.textContent = 'Strong';
+
+            const oqContainer = document.getElementById('openQuestions');
+            const questions = oqContainer.querySelectorAll('.open-q');
+            questions.forEach(q => {
+                const text = q.textContent.toLowerCase();
+                let resolved = false;
+                if (text.includes('first-time') && profileSignals['Experience']) resolved = true;
+                if (text.includes('daily driver') && profileSignals['Use case']) resolved = true;
+                if (text.includes('comfort') && profileSignals['Performance bias']) resolved = true;
+                if (text.includes('ice') && profileSignals['Powertrain']) resolved = true;
+                if (text.includes('body style') && profileSignals['Body interest']) resolved = true;
+                if (text.includes('heritage') && profileSignals['Heritage']) resolved = true;
+                if (text.includes('budget') && profileSignals['Budget']) resolved = true;
+                if (text.includes('emotional') && profileSignals['Emotional register']) resolved = true;
+                if (text.includes('model') && profileSignals['Model familiarity']) resolved = true;
+                if (text.includes('lifestyle') && profileSignals['Lifestyle']) resolved = true;
+                q.classList.toggle('resolved', resolved);
+            });
+            updateIntelPanel();
+        }
+
+        function loadDemoProfile(profileId) {
+            const profile = DEMO_PROFILES[profileId];
+            if (!profile) return;
+
+            isGenerating = false;
+            pendingDemoBuild = profile.buildData;
+
+            conversationHistory.length = 0;
+            conversationHistory.push({ role: 'system', content: SYSTEM_PROMPT });
+
+            profileSignals = {};
+            if (profileId === 1) {
+                profileSignals = {
+                    'Experience': { val: 'Current or past owner', conf: 'Stated' },
+                    'Use case': { val: 'Daily driver', conf: 'Stated' },
+                    'Lifestyle': { val: 'Family considerations', conf: 'Stated' },
+                    'Performance bias': { val: 'Balanced', conf: 'Inferred' },
+                    'Body interest': { val: 'SUV segment', conf: 'Inferred' },
+                    'Powertrain': { val: 'Hybrid-open', conf: 'Inferred' },
+                    'Budget': { val: 'Open budget', conf: 'Inferred' },
+                    'Emotional register': { val: 'Pragmatic', conf: 'Inferred' }
+                };
+            } else if (profileId === 2) {
+                profileSignals = {
+                    'Experience': { val: 'Seasoned owner', conf: 'Stated' },
+                    'Use case': { val: 'Track / performance', conf: 'Stated' },
+                    'Body interest': { val: '911 family', conf: 'Stated' },
+                    'Model familiarity': { val: 'Deep 911 knowledge', conf: 'Stated' },
+                    'Performance bias': { val: 'Performance-focused', conf: 'Inferred' },
+                    'Powertrain': { val: 'ICE purist', conf: 'Inferred' },
+                    'Heritage': { val: 'Current lineup', conf: 'Inferred' },
+                    'Emotional register': { val: 'Analytical', conf: 'Inferred' }
+                };
+            } else if (profileId === 3) {
+                profileSignals = {
+                    'Experience': { val: 'First-time interest', conf: 'Stated' },
+                    'Use case': { val: 'Daily driver', conf: 'Stated' },
+                    'Lifestyle': { val: 'Solo driving', conf: 'Inferred' },
+                    'Body interest': { val: 'GT touring / sedan', conf: 'Inferred' },
+                    'Powertrain': { val: 'EV-curious', conf: 'Stated' },
+                    'Performance bias': { val: 'Balanced', conf: 'Inferred' },
+                    'Budget': { val: 'Open budget', conf: 'Inferred' },
+                    'Emotional register': { val: 'Aspirational', conf: 'Inferred' }
+                };
+            } else if (profileId === 4) {
+                profileSignals = {
+                    'Experience': { val: 'Current or past owner', conf: 'Stated' },
+                    'Use case': { val: 'Track / performance', conf: 'Stated' },
+                    'Body interest': { val: '911 family', conf: 'Stated' },
+                    'Model familiarity': { val: 'Deep 911 knowledge', conf: 'Inferred' },
+                    'Performance bias': { val: 'Performance-focused', conf: 'Stated' },
+                    'Powertrain': { val: 'ICE purist', conf: 'Inferred' },
+                    'Lifestyle': { val: 'Solo driving', conf: 'Inferred' },
+                    'Emotional register': { val: 'Analytical', conf: 'Inferred' }
+                };
+            }
+            liveChatMessages.innerHTML = '';
+            liveChatSection.style.display = 'block';
+            const chipsWrap = document.getElementById('promptChipsWrap');
+            if (chipsWrap) chipsWrap.style.display = 'none';
+            if (askWeissFab) askWeissFab.classList.add('visible');
+            updateProfileUI();
+            updateIntelPanel();
+
+            profile.history.forEach((entry) => {
+                conversationHistory.push(entry);
+                if (entry.role === 'user') {
+                    appendUserMessage(entry.content);
+                } else if (entry.role === 'assistant') {
+                    appendAssistantMessage(entry.content);
+                }
+            });
+
+            setTimeout(() => sendMessage(profile.followUp), 0);
+        }
+
+        function removeThinkingRow() {
+            const tr = document.getElementById('liveThinkingRow');
+            if (tr) tr.remove();
+        }
+
+        function addThinkingRow() {
+            const thinkingRow = document.createElement('div');
+            thinkingRow.className = 'assistant-row chat-msg-enter';
+            thinkingRow.id = 'liveThinkingRow';
+            thinkingRow.innerHTML = `
+    <div class="assistant-avatar">
+      <span class="assistant-avatar-text">W</span>
+    </div>
+    <div class="assistant-body">
+      <div class="tacho-indicator" style="display:flex;">
+        <div class="tacho-ring-wrap">
+          <div class="tacho-ring"></div>
+          <div class="tacho-glow"></div>
+          <div class="tacho-needle"></div>
+        </div>
+        <span class="tacho-label">Weiss is typing...</span>
+      </div>
+    </div>
+  `;
+            liveChatMessages.appendChild(thinkingRow);
+            scrollToBottom(false);
+        }
+
+        async function streamAssistantResponse(messages, onToken, onDone) {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages }),
+            });
+
+            if (!response.ok) {
+                let details = `HTTP ${response.status}`;
+                try {
+                    const body = await response.json();
+                    if (body && body.error) details = body.error;
+                } catch (_) { }
+                throw new Error(details);
+            }
+
+            if (!response.body) {
+                throw new Error('Missing response stream.');
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            let currentEvent = '';
+            let doneEventReceived = false;
+
+            const handleLine = (rawLine) => {
+                const line = rawLine.trimEnd();
+                if (!line) {
+                    currentEvent = '';
+                    return;
+                }
+
+                if (line.startsWith('event:')) {
+                    currentEvent = line.slice(6).trim();
+                    return;
+                }
+
+                if (!line.startsWith('data:')) return;
+
+                const dataRaw = line.slice(5).trim();
+                if (!dataRaw) return;
+
+                let data;
+                try {
+                    data = JSON.parse(dataRaw);
+                } catch (_) {
+                    return;
+                }
+
+                if (currentEvent === 'delta' && typeof data.text === 'string') {
+                    onToken(data.text);
+                    return;
+                }
+
+                if (currentEvent === 'done') {
+                    doneEventReceived = true;
+                    onDone();
+                    return;
+                }
+
+                if (currentEvent === 'error') {
+                    throw new Error(data.error || 'Server error while streaming.');
+                }
+            };
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split(/\r?\n/);
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    handleLine(line);
+                }
+
+                if (doneEventReceived) {
+                    return;
+                }
+            }
+
+            buffer += decoder.decode();
+            if (buffer) {
+                const tailLines = buffer.split(/\r?\n/);
+                for (const line of tailLines) {
+                    if (line) handleLine(line);
+                }
+            }
+
+            if (!doneEventReceived) {
+                onDone();
+            }
+        }
+
+        async function sendMessage(userText) {
+            if (isGenerating) return;
+
+            isGenerating = true;
+            conversationCount++;
+            setStatus('generating', 'Typing...');
+            setInputEnabled(false);
+
+            liveChatSection.style.display = 'block';
+
+            const chipsWrap = document.getElementById('promptChipsWrap');
+            if (chipsWrap) chipsWrap.style.display = 'none';
+
+            const userMessageEl = appendUserMessage(userText);
+            showDesktopFloatInput();
+            if (askWeissFab) askWeissFab.classList.add('visible');
+            scrollToLatestUserMessage(userMessageEl);
+            conversationHistory.push({ role: 'user', content: userText });
+
+            addThinkingRow();
+
+            const { row, textEl, statsEl } = createAssistantRow();
+            textEl.innerHTML = '<span class="streaming-cursor"></span>';
+            row.style.display = 'none';
+
+            let fullText = '';
+            let firstToken = true;
+            const startTime = Date.now();
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 0));
+                await streamAssistantResponse([...conversationHistory], (token) => {
+                    if (firstToken) {
+                        firstToken = false;
+                        removeThinkingRow();
+                        row.style.display = 'flex';
+                        textEl.innerHTML = '';
+                    }
+
+                    fullText += token;
+                    textEl.innerHTML = formatResponseText(fullText) + '<span class="streaming-cursor"></span>';
+                }, () => { });
+
+                removeThinkingRow();
+                row.style.display = 'flex';
+                textEl.innerHTML = formatResponseText(fullText);
+
+                const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                statsEl.style.display = 'block';
+                statsEl.textContent = `${elapsed}s`;
+
+                conversationHistory.push({ role: 'assistant', content: fullText });
+                if (typeof extractProfileSignals === 'function') {
+                    extractProfileSignals(userText, fullText);
+                }
+                if (pendingDemoBuild) {
+                    appendBuildCard(pendingDemoBuild);
+                    pendingDemoBuild = null;
+                }
+            } catch (err) {
+                console.error('[Weiss API] Inference error:', err);
+                removeThinkingRow();
+                row.remove();
+                pendingDemoBuild = null;
+                appendChatError("Something didn't work as expected. Try asking again.");
+            }
+
+            isGenerating = false;
+            setStatus('ready', 'Ready');
+            setInputEnabled(true);
+        }
+
+        window._weissSubmit = (text) => {
+            if (!text || !text.trim()) return;
+            sendMessage(text.trim());
+        };
+
+        heroAskBtn.addEventListener('click', () => {
+            const val = heroInput.value.trim();
+            if (!val) return;
+            heroInput.value = '';
+            window._weissSubmit(val);
+        }, { capture: true });
+
+        heroInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = heroInput.value.trim();
+                if (!val) return;
+                e.preventDefault();
+                heroInput.value = '';
+                window._weissSubmit(val);
+            }
+        }, { capture: true });
+
+        document.querySelectorAll('.prompt-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                window._weissSubmit(chip.textContent.trim());
+            }, { capture: true });
+        });
+
+        // Desktop floating pill
+        const desktopFloatInput = document.getElementById('desktopFloatInput');
+        const floatInput = document.getElementById('floatInput');
+        const floatAskBtn = document.getElementById('floatAskBtn');
+        const heroInputWrapEl = document.querySelector('.hero-input-wrap');
+        let hasChatStartedForFloat = false;
+
+        const floatObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (desktopFloatInput && hasChatStartedForFloat && window.innerWidth > 768) {
+                    if (!entry.isIntersecting) {
+                        desktopFloatInput.style.display = 'block';
+                    } else {
+                        desktopFloatInput.style.display = 'none';
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        if (heroInputWrapEl) {
+            floatObserver.observe(heroInputWrapEl);
+        }
+
+        function showDesktopFloatInput() {
+            hasChatStartedForFloat = true;
+            if (window.innerWidth <= 768) return;
+
+            // Manually trigger once to prevent delay
+            if (heroInputWrapEl && desktopFloatInput) {
+                const rect = heroInputWrapEl.getBoundingClientRect();
+                const isVisible = (rect.top < window.innerHeight && rect.bottom >= 0);
+                if (!isVisible) {
+                    desktopFloatInput.style.display = 'block';
+                } else {
+                    desktopFloatInput.style.display = 'none';
+                }
+            }
+        }
+
+        function setFloatInputEnabled(enabled) {
+            if (!floatInput || !floatAskBtn) return;
+            floatInput.disabled = !enabled;
+            floatAskBtn.disabled = !enabled;
+        }
+
+        if (floatAskBtn) {
+            floatAskBtn.addEventListener('click', () => {
+                const val = floatInput.value.trim();
+                if (!val) return;
+                floatInput.value = '';
+                window._weissSubmit(val);
+            });
+        }
+
+        if (floatInput) {
+            floatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const val = floatInput.value.trim();
+                    if (!val) return;
+                    e.preventDefault();
+                    floatInput.value = '';
+                    window._weissSubmit(val);
+                }
+            });
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (!event.shiftKey) return;
+            const codeMap = { 'Digit1': 1, 'Digit2': 2, 'Digit3': 3, 'Digit4': 4 };
+            const profileId = codeMap[event.code];
+            if (!profileId) return;
+            const ps = document.getElementById('prototype-screen');
+            if (!ps || !ps.classList.contains('active')) return;
+            event.preventDefault();
+            loadDemoProfile(profileId);
+        });
+
+        // VIEW MODE: exec (default) / consumer
+        let isConsumerView = false;
+
+        function setViewMode(consumer) {
+            isConsumerView = consumer;
+            const wrap = document.querySelector('.proto-content-wrap');
+            if (wrap) wrap.classList.toggle('consumer-view', consumer);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.shiftKey && event.code === 'KeyV') {
+                const ps = document.getElementById('prototype-screen');
+                if (!ps || !ps.classList.contains('active')) return;
+                event.preventDefault();
+                setViewMode(!isConsumerView);
+            }
+        });
+
+        function updateIntelPanel() {
+            const keys = Object.keys(profileSignals);
+
+            // Confidence
+            const maxSignals = 10;
+            const pct = Math.min(100, Math.round((keys.length / maxSignals) * 100));
+            const intelFill = document.getElementById('intelConfFill');
+            const intelLabel = document.getElementById('intelConfLabel');
+            if (intelFill) intelFill.style.width = pct + '%';
+            if (intelLabel) intelLabel.textContent = pct < 25 ? 'Early' : pct < 50 ? 'Forming' : pct < 75 ? 'Developing' : 'Strong';
+
+            // Archetype
+            const archetype = document.getElementById('intelArchetype');
+            const archetypeSub = document.getElementById('intelArchetypeSub');
+            if (archetype) {
+                const bodyInterest = profileSignals['Body interest']?.val;
+                const useCase = profileSignals['Use case']?.val;
+                const powertrain = profileSignals['Powertrain']?.val;
+                let label = 'Profile forming.';
+                let sub = 'Insufficient signals.';
+                if (bodyInterest === 'SUV segment' && useCase === 'Daily driver') { label = 'Driven Female Buyer.'; sub = 'Family practicality. Executive presence.'; }
+                else if (bodyInterest === '911 family' && useCase === 'Track / performance') { label = 'Proud Patron.'; sub = 'Brand loyalist. Performance-driven.'; }
+                else if (powertrain === 'EV-curious' && bodyInterest === 'GT touring / sedan') { label = 'Style-Driven Professional.'; sub = 'Design-forward. Technology-first.'; }
+                else if (useCase === 'Track / performance' && bodyInterest === '911 family') { label = 'Track Day Regular.'; sub = 'Performance purist. GT3 intent.'; }
+                else if (keys.length >= 3) { label = 'Profile developing.'; sub = 'Signals accumulating.'; }
+                archetype.textContent = label;
+                if (archetypeSub) archetypeSub.textContent = sub;
+            }
+
+            // Next best action
+            const nextAction = document.getElementById('intelNextAction');
+            if (nextAction) {
+                const experience = profileSignals['Experience']?.val;
+                const emotional = profileSignals['Emotional register']?.val;
+                const body = profileSignals['Body interest']?.val;
+                let action = 'Continue conversation to refine profile.';
+                if (experience === 'First-time interest') action = 'Introduce entry-level models. Macan or base 911 Carrera.';
+                else if (experience === 'Seasoned owner') action = 'Propose Studio 48 session. High conversion probability.';
+                else if (emotional === 'Aspirational') action = 'Surface aspirational build. Emotional connection strong.';
+                else if (emotional === 'Analytical') action = 'Provide specifications and comparisons. Data-driven buyer.';
+                else if (body === 'SUV segment') action = 'Direct to Cayenne or Macan configurator.';
+                else if (body === '911 family') action = 'Qualify track vs road intent before recommending variant.';
+                nextAction.textContent = action;
+            }
+
+            // Signals
+            const intelSignals = document.getElementById('intelSignals');
+            if (intelSignals) {
+                if (keys.length === 0) {
+                    intelSignals.innerHTML = '<span style="font-size:11px; color:var(--text-muted);">No signals recorded.</span>';
+                } else {
+                    intelSignals.innerHTML = keys.map(key => {
+                        const s = profileSignals[key];
+                        return `<div class="intel-signal">
+          <div>
+            <div class="intel-signal-cat">${escHtml(key)}</div>
+            <div class="intel-signal-val">${escHtml(s.val)}</div>
+          </div>
+          <div class="intel-signal-conf ${s.conf === 'Inferred' ? 'inferred' : ''}">${escHtml(s.conf)}</div>
+        </div>`;
+                    }).join('');
+                }
+            }
+
+            // Open questions
+            const intelOQ = document.getElementById('intelOpenQuestions');
+            if (intelOQ) {
+                const questions = intelOQ.querySelectorAll('.intel-open-q');
+                questions.forEach(q => {
+                    const text = q.textContent.toLowerCase();
+                    let resolved = false;
+                    if (text.includes('first-time') && profileSignals['Experience']) resolved = true;
+                    if (text.includes('daily driver') && profileSignals['Use case']) resolved = true;
+                    if (text.includes('comfort') && profileSignals['Performance bias']) resolved = true;
+                    if (text.includes('ice') && profileSignals['Powertrain']) resolved = true;
+                    if (text.includes('body style') && profileSignals['Body interest']) resolved = true;
+                    if (text.includes('heritage') && profileSignals['Heritage']) resolved = true;
+                    if (text.includes('budget') && profileSignals['Budget']) resolved = true;
+                    if (text.includes('emotional') && profileSignals['Emotional register']) resolved = true;
+                    if (text.includes('model familiarity') && profileSignals['Model familiarity']) resolved = true;
+                    if (text.includes('lifestyle') && profileSignals['Lifestyle']) resolved = true;
+                    q.classList.toggle('resolved', resolved);
+                });
+            }
+        }
+
+        if (askWeissFab) {
+            askWeissFab.addEventListener('click', () => {
+                heroInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                heroInput.focus({ preventScroll: true });
+            });
+        }
+
+        setStatus('ready', 'Ready');
+        setInputEnabled(true);
+
+        // --- BANNER INTEGRATION JS ---
+        const smallPopup = document.getElementById('smallPopup');
+        const expandedBanner = document.getElementById('expandedBanner');
+        const bannerWrapper = document.getElementById('bannerWrapper');
+        const btnKnowMore = document.getElementById('btnKnowMore');
+        const btnAcceptDefault = document.getElementById('btnAcceptDefault');
+        const btnCloseSmall = document.getElementById('btnCloseSmall');
+        const bannerCards = document.querySelectorAll('.tier-card');
+        const btnContinueBanner = document.getElementById('btnContinue');
+        const btnLaterBanner = document.getElementById('btnLater');
+
+        let bannerSelectedTier = 'Connected';
+
+        function acceptAndCloseBanner(tierName) {
+            if (tierName === 'Standard') sel = 0;
+            else if (tierName === 'Personalized') sel = 1;
+            else if (tierName === 'Connected') sel = 2;
+
+            applyTier();
+
+            if (expandedBanner && expandedBanner.classList.contains('visible')) {
+                expandedBanner.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+                expandedBanner.style.transform = 'translateY(120%)';
+                expandedBanner.style.opacity = '0';
+            } else if (smallPopup) {
+                smallPopup.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+                smallPopup.style.transform = 'translateY(120%)';
+                smallPopup.style.opacity = '0';
+            }
+            setTimeout(() => {
+                if (bannerWrapper) bannerWrapper.style.display = 'none';
+            }, 400);
+        }
+
+        if (btnAcceptDefault) btnAcceptDefault.addEventListener('click', () => acceptAndCloseBanner('Connected'));
+        if (btnCloseSmall) btnCloseSmall.addEventListener('click', () => acceptAndCloseBanner('Connected'));
+
+        if (btnKnowMore) {
+            btnKnowMore.addEventListener('click', () => {
+                smallPopup.style.display = 'none';
+                expandedBanner.classList.add('visible');
+                const connectedCard = document.querySelector('.tier-card[data-tier="Connected"]');
+                if (connectedCard) selectBannerCard(connectedCard);
+            });
+        }
+
+        if (bannerCards) {
+            bannerCards.forEach(card => {
+                card.addEventListener('click', () => selectBannerCard(card));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectBannerCard(card);
+                    }
+                });
+            });
+        }
+
+        function selectBannerCard(selectedElement) {
+            bannerCards.forEach(c => c.classList.remove('selected'));
+            selectedElement.classList.add('selected');
+            bannerSelectedTier = selectedElement.getAttribute('data-tier');
+            if (btnContinueBanner) {
+                btnContinueBanner.textContent = `Continue with ${bannerSelectedTier}`;
+                btnContinueBanner.disabled = false;
+                btnContinueBanner.classList.add('active');
+            }
+        }
+
+        if (btnContinueBanner) {
+            btnContinueBanner.addEventListener('click', () => {
+                if (!bannerSelectedTier) return;
+                acceptAndCloseBanner(bannerSelectedTier);
+            });
+        }
+
+        if (btnLaterBanner) {
+            btnLaterBanner.addEventListener('click', () => {
+                acceptAndCloseBanner('Connected');
+            });
+        }
+
+        applyTier();
+        setTimeout(observeFI, 80);
+        if (typeof window._weissStartModelLoad === 'function') window._weissStartModelLoad();
+    </script>
+</body>
+
+</html>
