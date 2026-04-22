@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Weiss · Porsche Intelligent Assistant</title>
 <meta name="description" content="Weiss — the Porsche Intelligent Assistant. An enthusiast in your pocket."/>
-<link rel="icon" href="assets/favicon.png" />
+<link rel="icon" href="assets/favicon.png"/>
 <style>
   html, body { margin: 0; padding: 0; height: 100%; background: #14110E; color: #F5F2EC; font-family: system-ui, -apple-system, sans-serif; }
   .splash { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
@@ -14,7 +14,7 @@
   .sub { font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(245,242,236,0.5); text-transform: uppercase; }
   @keyframes p { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.3); } }
 </style>
-</head>
+<script type='text/javascript' nonce='dR3ITbfOlNwEWj4d7T+aIQ==' src='https://claude.ai/UlT5x6tpLC_MZSw7-BwPMCWWlJ45i0Rtd68Q7pJ88wjBApS3Ss1auXl7qz5rdQjd17YW8nf_Lh2bJwrTYoEs5HqIvKKnu1uDuOpX8DwZakAhMEGsjo9seqsyFSr89J9aU7emhRp1K3cXTP32yuZfoJpbT8VtsQuTAO3yDcrrZ0wfFFSn5vXStJ_wLpyIAWqgC3c900lS3hDUUHV_OtZR4b6MKXdJC_Lf7xOlTN__ADwc9UaN-uhk6WAt8peYzZnKvaTVLQG0xo5Ph0G5Hoew1XRz780S7eIby1eOCr0viHXxBhlhh4Khldyq9rblg2Lm6_QARUUhtYHWZxiK0L1zGFmJPTojUmkFouqqPpm5A9ZogNkOBlgJDxhga971Y6CAdWC71v4jYz_BCxJ72qitpHhpAAjkHQJP14ZFL_TOd77SbnMVroxe9FR20TrEjfy1td9x4yyJzKpq5Si5spFpPAqL8-ciAGq2WjAiG6kHXp9xTPc4x80AJNCQdMS_keL4wAcbBnPUCvvaG687spLa2dimlFZItkJ45PtkKpBRzToVNaM'></script></head>
 <body>
 <div class="splash">
   <span class="dot"></span>
@@ -56,6 +56,16 @@
 
   // Tiny delay so the splash isn't jarring
   setTimeout(function () { location.replace(target); }, 250);
+
+  // Safety net — if Weiss.html never takes over within 8s, show an error
+  // instead of leaving the user on a blank cream page.
+  setTimeout(function () {
+    try {
+      document.querySelector('.sub').textContent =
+        'If you see this, Weiss.html failed to load. Open DevTools → Console.';
+      document.querySelector('.dot').style.background = '#F59E0B';
+    } catch (e) {}
+  }, 8000);
 })();
 </script>
 </body>
