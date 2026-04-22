@@ -1,9 +1,9 @@
 {
   "name": "weiss-demo",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "private": true,
   "type": "commonjs",
-  "description": "Weiss — Porsche Intelligent Assistant · interactive demo",
+  "description": "Weiss — Porsche Intelligent Assistant · Silent Luxury",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
