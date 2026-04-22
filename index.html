@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Weiss · Porsche Intelligent Assistant</title>
+<meta name="description" content="Weiss — the Porsche Intelligent Assistant. An enthusiast in your pocket."/>
+<link rel="icon" href="assets/favicon.png" />
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #14110E; color: #F5F2EC; font-family: system-ui, -apple-system, sans-serif; }
+  .splash { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #D92D20; animation: p 1.4s ease-in-out infinite; }
+  .word { font-family: Georgia, serif; font-weight: 300; font-size: 48px; letter-spacing: -0.04em; color: #F5F2EC; }
+  .sub { font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(245,242,236,0.5); text-transform: uppercase; }
+  @keyframes p { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.3); } }
+</style>
+</head>
+<body>
+<div class="splash">
+  <span class="dot"></span>
+  <div class="word">Weiss</div>
+  <div class="sub">Routing…</div>
+</div>
+<script>
+(function () {
+  // ── Router ───────────────────────────────────────────────
+  // Query params:
+  //   ?device=mobile|desktop|canvas   force a view
+  //   ?demo=1                         hide tweaks (default on)
+  //   ?tweaks=1                       show tweaks panel
+  //   ?canvas=1                       open the full design canvas
+
+  var qs = new URLSearchParams(location.search);
+  var force = qs.get('device');
+  var showCanvas = qs.get('canvas') === '1';
+  var showTweaks = qs.get('tweaks') === '1';
+
+  var ua = navigator.userAgent || '';
+  var isMobile = /iPhone|iPod|Android.*Mobile|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  var isTablet = /iPad|Android(?!.*Mobile)|Tablet/i.test(ua);
+
+  var device;
+  if (force === 'mobile' || force === 'desktop' || force === 'canvas') {
+    device = force;
+  } else if (showCanvas) {
+    device = 'canvas';
+  } else if (isMobile) {
+    device = 'mobile';
+  } else {
+    // Desktop + tablet → full canvas (they've got the screen real-estate)
+    device = 'canvas';
+  }
+
+  var target = 'Weiss.html?view=' + device;
+  if (showTweaks) target += '&tweaks=1';
+
+  // Tiny delay so the splash isn't jarring
+  setTimeout(function () { location.replace(target); }, 250);
+})();
+</script>
+</body>
+</html>

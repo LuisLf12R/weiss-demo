@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Weiss · Porsche Intelligent Assistant</title>
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=12" />
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="assets/weiss-client.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Tweaks panel -->
+<div class="tweaks-panel" id="tweaksPanel">
+  <h4>Tweaks</h4>
+  <div class="tweak-row">
+    <label>Voice overlay</label>
+    <button onclick="window.__weissTweak('voice')">Trigger</button>
+  </div>
+  <div class="tweak-row">
+    <label>Configurator</label>
+    <button onclick="window.__weissTweak('config')">Inject</button>
+  </div>
+  <div class="tweak-row">
+    <label>Consent banner</label>
+    <button onclick="window.__weissTweak('consent')">Show</button>
+  </div>
+  <div class="tweak-row">
+    <label>View (desktop)</label>
+    <select onchange="window.__weissTweak('view', this.value)">
+      <option value="assistant">Assistant</option>
+      <option value="dealership">Dealership</option>
+    </select>
+  </div>
+</div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="components/shared.jsx"></script>
+<script type="text/babel" src="components/consent.jsx"></script>
+<script type="text/babel" src="components/features.jsx"></script>
+<script type="text/babel" src="components/desktop.jsx"></script>
+<script type="text/babel" src="components/mobile.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+// hooks already in scope from shared.jsx
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "signal-red",
+  "tone": "enthusiast",
+  "layout": "dark"
+}/*EDITMODE-END*/;
+
+// URL-driven mode: ?view=mobile | desktop | canvas, ?tweaks=1 to show tweaks
+const URL_PARAMS = new URLSearchParams(location.search);
+const VIEW = URL_PARAMS.get("view") || "canvas";
+const SHOW_TWEAKS = URL_PARAMS.get("tweaks") === "1";
+
+function App() {
+  const [desktopTweaks, setDesktopTweaks] = useState({});
+  const [mobileTweaks, setMobileTweaks] = useState({});
+  const [desktopView, setDesktopView] = useState("assistant");
+
+  useEffect(() => {
+    window.__weissTweak = (kind, val) => {
+      if (kind === "voice") {
+        setDesktopTweaks(t => ({ ...t, startVoice: Date.now() }));
+        setMobileTweaks(t => ({ ...t, mobileVoice: Date.now() }));
+      }
+      if (kind === "config") setDesktopTweaks(t => ({ ...t, showConfig: Date.now() }));
+      if (kind === "consent") {
+        setDesktopTweaks(t => ({ ...t, showConsent: Date.now() }));
+        setMobileTweaks(t => ({ ...t, mobileConsent: Date.now() }));
+      }
+      if (kind === "view") setDesktopView(val);
+    };
+    if (!SHOW_TWEAKS) {
+      const panel = document.getElementById("tweaksPanel");
+      if (panel) panel.style.display = "none";
+    }
+    function onMsg(e) {
+      if (!e.data) return;
+      if (e.data.type === "__activate_edit_mode") document.getElementById("tweaksPanel")?.classList.add("open");
+      if (e.data.type === "__deactivate_edit_mode") document.getElementById("tweaksPanel")?.classList.remove("open");
+    }
+    window.addEventListener("message", onMsg);
+    window.parent.postMessage({ type: "__edit_mode_available" }, "*");
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+
+  // ── Solo desktop: fullscreen the desktop prototype ──
+  if (VIEW === "desktop") {
+    return (
+      <div style={{ position: "fixed", inset: 0, background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <SoloFrame width={1440} height={900}>
+          <DesktopProto key={desktopView} initialView={desktopView} tweaks={desktopTweaks} />
+        </SoloFrame>
+      </div>
+    );
+  }
+
+  // ── Solo mobile: fullscreen the mobile prototype, centered ──
+  if (VIEW === "mobile") {
+    return (
+      <div style={{ position: "fixed", inset: 0, background: "var(--paper)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <MobileHost>
+          <MobileProto tweaks={mobileTweaks} />
+        </MobileHost>
+      </div>
+    );
+  }
+
+  // ── Canvas: the original explorer view ──
+  return (
+    <DesignCanvas>
+      <DCSection id="flagship" title="Weiss · end-to-end flow" subtitle="Dark, editorial, enthusiast voice · Porsche Intelligent Assistant">
+        <DCArtboard id="desktop" label="Desktop · 1440×900" width={1440} height={900}>
+          <DesktopProto key={desktopView} initialView={desktopView} tweaks={desktopTweaks} />
+        </DCArtboard>
+        <DCArtboard id="mobile" label="Mobile · iPhone 15 · 390×844" width={390} height={844}>
+          <MobileProto tweaks={mobileTweaks} />
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="moments" title="Signature moments" subtitle="Voice · Configurator · Dealer Brief">
+        <DCArtboard id="voice" label="Voice · listening" width={900} height={600}>
+          <div style={{ position: "relative", width: "100%", height: "100%", background: "var(--paper)" }}>
+            <VoiceOverlay onClose={() => {}} onSubmit={() => {}} />
+          </div>
+        </DCArtboard>
+        <DCArtboard id="dealer" label="Dealer Brief · internal only" width={1200} height={900}>
+          <div style={{ position: "relative", width: "100%", height: "100%", background: "var(--paper)" }}>
+            <div className="proto-chrome" style={{ position: "absolute" }}>
+              <Brand />
+              <div className="proto-chrome-right">
+                <span>Dealer console · Beverly Hills</span>
+              </div>
+            </div>
+            <DealerView />
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="notes" title="Design notes" subtitle="What's different, and why">
+        <DCArtboard id="notes" label="Rationale" width={720} height={600}>
+          <NotesBoard />
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+// Host for solo desktop — scales the 1440×900 artboard to fit viewport
+function SoloFrame({ width, height, children }) {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const update = () => {
+      const s = Math.min(window.innerWidth / width, window.innerHeight / height);
+      setScale(Math.min(1, s));
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [width, height]);
+  return (
+    <div style={{ position: "relative", width, height, transform: `scale(${scale})`, transformOrigin: "center center", background: "var(--paper)", boxShadow: "0 40px 80px -20px rgba(0,0,0,0.5)" }}>
+      {children}
+    </div>
+  );
+}
+
+// Host for solo mobile — 390×844 centered; scales down on short viewports
+function MobileHost({ children }) {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const update = () => {
+      // Full-bleed on actual mobile devices; scaled-fit on desktop browsers
+      const w = 390, h = 844;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      if (vw <= 430) { setScale(vw / w); return; }
+      const s = Math.min(1, Math.min(vw * 0.9 / w, vh * 0.95 / h));
+      setScale(s);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return (
+    <div style={{ position: "relative", width: 390, height: 844, transform: `scale(${scale})`, transformOrigin: "center center", overflow: "hidden", borderRadius: scale < 1 ? 44 : 0, boxShadow: scale < 1 ? "0 30px 60px -20px rgba(0,0,0,0.35)" : "none", background: "var(--paper)" }}>
+      {children}
+    </div>
+  );
+}
+
+function NotesBoard() {
+  const notes = [
+    ["Aesthetic", "Dark onyx dominates, paper-warm type. One signal red — used only for listening / active states. Cars carry all color; UI is achromatic on purpose."],
+    ["Voice", "Real listening state with animated waveform + live transcription. The mic is not decoration — it's the primary input for in-car and hands-busy moments."],
+    ["Memory", "Not shown to consumers. Lives in the Dealer Brief — the advisor's screen. That's where it earns its keep and where transparency matters."],
+    ["Configurator", "Weiss drafts a spec as you talk. Inline card, synced to dealer, editable. The conversation becomes the configuration."],
+    ["Mobile", "Sticky-bottom input. Horizontal scroll chips. 44px touch targets. Spec strip becomes a scroll-snap carousel inside cards."],
+  ];
+  return (
+    <div style={{ width: "100%", height: "100%", background: "var(--paper)", color: "var(--ink)", padding: 32, overflowY: "auto" }}>
+      <div className="eyebrow" style={{ marginBottom: 8 }}>Design rationale</div>
+      <h2 style={{ fontFamily: "var(--display)", fontWeight: 300, fontSize: 36, letterSpacing: "-0.025em", marginBottom: 24, lineHeight: 1 }}>
+        What moved, and why.
+      </h2>
+      {notes.map(([h, p], i) => (
+        <div key={h} style={{ padding: "16px 0", borderTop: i === 0 ? 0 : "1px solid var(--bone)" }}>
+          <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-60)", marginBottom: 6 }}>{h}</div>
+          <div style={{ fontSize: 14, lineHeight: 1.55, color: "var(--ink-80)" }}>{p}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
